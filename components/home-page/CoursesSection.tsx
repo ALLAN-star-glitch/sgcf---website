@@ -36,12 +36,12 @@ export const CoursesSection = () => {
                   {course.title}
                 </h3>
                 <p className="text-gray-600 mb-4">{course.description}</p>
-                <a
+                <Link
                   href="#"
                   className="bg-accent text-white hover:bg-accent/90 px-6 py-2 rounded-full inline-block font-medium transition-colors"
                 >
                   View Details
-                </a>
+                </Link>
               </div>
             </div>
           ))}
