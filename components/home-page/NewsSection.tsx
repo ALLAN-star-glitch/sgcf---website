@@ -187,8 +187,6 @@ export const NewsSection = () => {
                 src="/may-intake.jpg"
                 alt="Promotional Banner Image"
                 fill
-                width={630}
-                height={630}
                 className="object-cover"
                 unoptimized
               />
