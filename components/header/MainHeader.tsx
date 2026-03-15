@@ -40,15 +40,20 @@ export const MainHeader = () => {
     };
   }, [mobileMenuOpen]);
 
+  // Get top header height for calculations
+  const topHeaderHeight = isScrolled ? 0 : 32; // 8 (h-8) in pixels = 32px
+  const topHeaderHeightSm = isScrolled ? 0 : 40; // 10 (sm:h-10) in pixels = 40px
+
   return (
     <>
       <header
         className={`
           fixed left-0 w-full z-50
           transition-all duration-500 ease-out
+          ${isScrolled ? 'top-0' : 'top-8 sm:top-10'}
           ${isScrolled 
-            ? 'top-0 bg-white/90 backdrop-blur-md shadow-lg py-2 sm:py-3' 
-            : 'top-0 sm:top-6 md:top-8 bg-white/95 backdrop-blur-sm shadow-md py-3 sm:py-4'
+            ? 'bg-white/90 backdrop-blur-md shadow-lg py-2 sm:py-3' 
+            : 'bg-white/95 backdrop-blur-sm shadow-md py-3 sm:py-4'
           }
         `}
       >
@@ -197,17 +202,22 @@ export const MainHeader = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
               aria-hidden="true"
             />
             
-            {/* Slide-in Menu */}
+            {/* Slide-in Menu - Now covers full height properly */}
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="lg:hidden fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50"
+              className="fixed left-0 w-80 bg-white shadow-2xl z-50 overflow-y-auto"
+              style={{ 
+                top: 0,
+                height: '100vh',
+                paddingTop: isScrolled ? '56px' : 'calc(32px + 56px)', // TopHeader height + MainHeader height
+              }}
             >
               <div className="flex flex-col h-full">
                 {/* Menu Header */}
@@ -289,7 +299,7 @@ export const MainHeader = () => {
                 </nav>
 
                 {/* Mobile Register Button - Extra CTA in menu */}
-                <div className="p-6 border-t border-gray-100">
+                <div className="p-6 border-t border-gray-100 mt-auto">
                   <Link
                     href="https://form.jotform.com/253171134791556"
                     target="_blank"
@@ -306,6 +316,16 @@ export const MainHeader = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Spacer to prevent content from hiding behind fixed headers */}
+      <div 
+        className="w-full"
+        style={{ 
+          height: isScrolled 
+            ? '56px' // Just main header
+            : 'calc(32px + 56px)' // Top header + main header
+        }}
+      />
     </>
   );
-};
+}; 

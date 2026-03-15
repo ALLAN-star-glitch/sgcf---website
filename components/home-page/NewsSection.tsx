@@ -184,7 +184,7 @@ export const NewsSection = () => {
 
             <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden">
               <Image
-                src="/acop2026intake.jpg"
+                src="/may-intake.jpg"
                 alt="Promotional Banner Image"
                 fill
                 className="object-cover"

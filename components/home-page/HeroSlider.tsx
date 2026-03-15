@@ -67,8 +67,7 @@ export const HeroSlider = () => {
   }, [currentSlide]);
 
   return (
-    <section className="relative pt-20 h-[85vh] sm:h-[80vh] md:h-[75vh] lg:h-[85vh] xl:h-[90vh] min-h-[500px] overflow-hidden">
-
+    <section className="relative h-[60vh] sm:h-[55vh] md:h-[50vh] lg:h-[60vh] xl:h-[65vh] min-h-[400px] overflow-hidden">
       {/* MOBILE SLIDER */}
       <div
         ref={sliderRef}
@@ -86,12 +85,12 @@ export const HeroSlider = () => {
 
             <div className="container mx-auto px-4 h-full flex items-center relative z-20">
               <div className="max-w-2xl text-white">
-                <h1 className="font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 drop-shadow-lg">
+                <h1 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-3 drop-shadow-lg">
                   {slide.title}
                 </h1>
 
                 {slide.subtitle && (
-                  <p className="text-base sm:text-lg md:text-xl mb-6 opacity-95 leading-relaxed">
+                  <p className="text-sm sm:text-base md:text-lg mb-4 opacity-95 leading-relaxed">
                     {slide.subtitle}
                   </p>
                 )}
@@ -104,7 +103,7 @@ export const HeroSlider = () => {
                         href="https://form.jotform.com/253171134791556"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-full font-medium text-center shadow-md"
+                        className="bg-accent hover:bg-accent/90 text-white px-5 py-2.5 rounded-full font-medium text-center shadow-md text-sm sm:text-base"
                       >
                         {slide.primaryCta}
                       </a>
@@ -113,7 +112,7 @@ export const HeroSlider = () => {
                     {slide.primaryCta === "Discover Our Courses" && (
                       <Link
                         href="/courses"
-                        className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-full font-medium text-center shadow-md"
+                        className="bg-accent hover:bg-accent/90 text-white px-5 py-2.5 rounded-full font-medium text-center shadow-md text-sm sm:text-base"
                       >
                         {slide.primaryCta}
                       </Link>
@@ -122,7 +121,7 @@ export const HeroSlider = () => {
                     {slide.secondaryCta === "Explore Courses" && (
                       <Link
                         href="/courses"
-                        className="border-2 border-white hover:bg-white/10 text-white px-6 py-3 rounded-full font-medium text-center shadow-md"
+                        className="border-2 border-white hover:bg-white/10 text-white px-5 py-2.5 rounded-full font-medium text-center shadow-md text-sm sm:text-base"
                       >
                         {slide.secondaryCta}
                       </Link>
@@ -154,12 +153,12 @@ export const HeroSlider = () => {
 
             <div className="container mx-auto px-4 h-full flex items-center relative z-20">
               <div className="max-w-2xl text-white">
-                <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 drop-shadow-lg">
+                <h1 className="font-playfair text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-4 drop-shadow-lg">
                   {slide.title}
                 </h1>
 
                 {slide.subtitle && (
-                  <p className="text-lg md:text-xl mb-6 opacity-95 leading-relaxed">
+                  <p className="text-base md:text-lg lg:text-xl mb-5 opacity-95 leading-relaxed">
                     {slide.subtitle}
                   </p>
                 )}
@@ -171,7 +170,7 @@ export const HeroSlider = () => {
                         href="https://form.jotform.com/253171134791556"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-full font-medium text-center shadow-md"
+                        className="bg-accent hover:bg-accent/90 text-white px-6 py-2.5 rounded-full font-medium text-center shadow-md"
                       >
                         {slide.primaryCta}
                       </a>
@@ -180,7 +179,7 @@ export const HeroSlider = () => {
                     {slide.primaryCta === "Discover Our Courses" && (
                       <Link
                         href="/courses"
-                        className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-full font-medium text-center shadow-md"
+                        className="bg-accent hover:bg-accent/90 text-white px-6 py-2.5 rounded-full font-medium text-center shadow-md"
                       >
                         {slide.primaryCta}
                       </Link>
@@ -192,7 +191,7 @@ export const HeroSlider = () => {
                         href="https://form.jotform.com/253171134791556"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-full font-medium text-center shadow-md"
+                        className="bg-accent hover:bg-accent/90 text-white px-6 py-2.5 rounded-full font-medium text-center shadow-md"
                       >
                         {slide.primaryCta}
                       </a>
@@ -201,7 +200,7 @@ export const HeroSlider = () => {
                     {slide.secondaryCta === "Explore Courses" && (
                       <Link
                         href="/courses"
-                        className="border-2 border-white hover:bg-white/10 text-white px-8 py-3 rounded-full font-medium text-center shadow-md"
+                        className="border-2 border-white hover:bg-white/10 text-white px-6 py-2.5 rounded-full font-medium text-center shadow-md"
                       >
                         {slide.secondaryCta}
                       </Link>
@@ -217,26 +216,26 @@ export const HeroSlider = () => {
       {/* ARROWS */}
       <button
         onClick={goPrev}
-        className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 h-12 w-12 rounded-full bg-accent/70 hover:bg-accent backdrop-blur-md shadow-lg items-center justify-center"
+        className="cursor-pointer hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 h-10 w-10 rounded-full bg-accent/70 hover:bg-accent backdrop-blur-md shadow-lg items-center justify-center"
       >
-        <ChevronLeft className="text-white w-6 h-6" />
+        <ChevronLeft className="text-white w-5 h-5" />
       </button>
 
       <button
         onClick={goNext}
-        className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 h-12 w-12 rounded-full bg-accent/70 hover:bg-accent backdrop-blur-md shadow-lg items-center justify-center"
+        className="cursor-pointer hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 h-10 w-10 rounded-full bg-accent/70 hover:bg-accent backdrop-blur-md shadow-lg items-center justify-center"
       >
-        <ChevronRight className="text-white w-6 h-6" />
+        <ChevronRight className="text-white w-5 h-5" />
       </button>
 
       {/* INDICATORS */}
-      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center gap-3">
+      <div className="absolute bottom-4 left-0 right-0 z-30 flex justify-center gap-2">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`h-1.5 rounded-full transition-all ${
-              index === currentSlide ? "w-10 bg-accent" : "w-3 bg-white/50"
+              index === currentSlide ? "w-8 bg-accent" : "w-2 bg-white/50"
             }`}
           />
         ))}
