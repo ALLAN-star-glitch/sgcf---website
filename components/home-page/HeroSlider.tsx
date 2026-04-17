@@ -7,7 +7,7 @@ import Link from "next/link";
 const slides = [
   {
     id: 1,
-    title: "January 2026 Intake NOW OPEN! Africana College of Professioals",
+    title: "May 2026 Intake NOW OPEN! Africana College of Professioals",
     subtitle: "Home of Quality Education",
     bgImage: "/acop2026intake.jpg",
     primaryCta: "Apply Now",
