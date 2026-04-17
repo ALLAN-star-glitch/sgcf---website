@@ -130,7 +130,9 @@ export default async function NewsDetailPage({
             Apply for May 2026 intake at Africana College of Professionals
           </p>
           <Link
-            href="/admission"
+            href="https://form.jotform.com/253171134791556"
+            target='_blank'
+            rel="noopener noreferrer"
             className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
           >
             Apply Now
