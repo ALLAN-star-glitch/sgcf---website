@@ -1,5 +1,5 @@
 import { NewsCard } from '@/components/cards/NewsCard'
-import { getAllNews } from '@/lib/NewsData'
+import { getAllNews, NewsArticle, getNewsTypeDisplayName, formatDate, decodeHtmlEntities } from '@/lib/wordpress'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -48,12 +48,30 @@ export const metadata: Metadata = {
   },
 }
 
-export default function NewsPage() {
-  const newsArticles = getAllNews()
+// Enable ISR - revalidate every 60 seconds
+export const revalidate = 60
+
+export default async function NewsPage() {
+  // Fetch from WordPress
+  const newsArticles = await getAllNews()
 
   // Featured article (first one)
   const featuredArticle = newsArticles[0]
   const remainingArticles = newsArticles.slice(1)
+
+  // Helper to get excerpt from body
+  const getExcerpt = (body: string, maxLength: number = 120) => {
+    // First decode HTML entities, then strip HTML tags
+    const decodedBody = decodeHtmlEntities(body || '');
+    const plainText = decodedBody.replace(/<[^>]*>/g, '');
+    if (plainText.length <= maxLength) return plainText;
+    return plainText.substring(0, maxLength) + '...';
+  }
+
+  // Helper to get featured image URL
+  const getFeaturedImageUrl = (article: NewsArticle) => {
+    return article.newsMetadata?.featuredImage?.node?.mediaItemUrl || null
+  }
 
   return (
     <main className="min-h-screen bg-white">
@@ -73,13 +91,14 @@ export default function NewsPage() {
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-l-8 border-orange-500">
             <div className="md:flex">
               <div className="md:w-1/2 relative min-h-[300px] md:min-h-full">
-                {featuredArticle.image ? (
+                {getFeaturedImageUrl(featuredArticle) ? (
                   <Image
-                    src={featuredArticle.image}
+                    src={getFeaturedImageUrl(featuredArticle)!}
                     alt={featuredArticle.title}
                     fill
                     className="object-cover"
                     priority
+                    unoptimized
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (
@@ -90,14 +109,18 @@ export default function NewsPage() {
               </div>
               <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
                 <span className="text-orange-500 text-sm font-semibold uppercase tracking-wide">
-                  Featured Story
+                  {getNewsTypeDisplayName(featuredArticle.newsMetadata?.newsType || [])}
                 </span>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mt-2 mb-3">
                   {featuredArticle.title}
                 </h2>
-                <p className="text-gray-600 mb-4">{featuredArticle.excerpt}</p>
+                <p className="text-gray-600 mb-4">
+                   {featuredArticle.newsMetadata?.excerpt || getExcerpt(featuredArticle.newsMetadata?.body || '', 150)}
+                </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">{featuredArticle.date}</span>
+                  <span className="text-sm text-gray-500">
+                    {formatDate(featuredArticle.date)}
+                  </span>
                   <Link
                     href={`/news/${featuredArticle.slug}`}
                     className="inline-flex items-center text-orange-600 font-semibold hover:text-purple-700 transition-colors"

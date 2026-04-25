@@ -5,6 +5,7 @@ import { TopHeader } from "@/components/header/TopHeader";
 import { MainHeader } from "@/components/header/MainHeader";
 import { Footer } from "@/components/footer/Footer";
 import Script from "next/script";
+import { MainHeaderWrapper } from "@/components/MainHeaderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,7 +64,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <TopHeader />
-        <MainHeader />
+        <MainHeaderWrapper /> {/* Server component fetches data */}
         <main>{children}</main>
         <Footer />
 

@@ -10,14 +10,31 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Add your acop.co.ke domain here
       {
         protocol: 'https',
         hostname: 'www.acop.co.ke',
         port: '',
         pathname: '/**',
       },
-      // Also allow local images (no pattern needed for local /public folder)
+      {
+        protocol: 'https',
+        hostname: 'ipcckenya.com',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cms.acop.co.ke',
+        port: '',
+        pathname: '/wp-content/uploads/**',
+      },
+      // Add Gravatar for author avatars
+      {
+        protocol: 'https',
+        hostname: 'secure.gravatar.com',
+        port: '',
+        pathname: '/avatar/**',
+      },
     ],
   },
 };

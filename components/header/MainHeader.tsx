@@ -8,32 +8,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { desktopMenuItems } from '@/lib/constants/MenuItems';
 
-export const MainHeader = () => {
+interface MainHeaderProps {
+  hasRecentNews?: boolean;
+}
+
+export const MainHeader = ({ hasRecentNews = false }: MainHeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasRecentNews, setHasRecentNews] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Check for recent news - replace with your actual logic
-  useEffect(() => {
-    const checkRecentNews = async () => {
-      // Replace this with your actual API call
-      // For now, set to true to show animated badge
-      setHasRecentNews(true);
-      
-      // Example when you have WordPress:
-      // const response = await fetch('/api/has-recent-news');
-      // const data = await response.json();
-      // setHasRecentNews(data.hasRecent);
-    };
-    
-    checkRecentNews();
   }, []);
 
   // Close mobile menu on escape key
