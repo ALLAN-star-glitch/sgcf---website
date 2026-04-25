@@ -5,6 +5,7 @@ import { AboutSection } from '@/components/home-page/AboutSection'
 import { FeaturesSection } from '@/components/home-page/FeaturesSection'
 import { CoursesSection } from '@/components/home-page/CoursesSection'
 import { TestimonialsSection } from '@/components/home-page/TestmonialSection'
+import { getAllNews } from '@/lib/wordpress'
 
 export const metadata: Metadata = {
   title: 'Africana College of Professionals | Professional Courses in Kenya',
@@ -42,7 +43,16 @@ export const metadata: Metadata = {
   },
 }
 
-export default function Home() {
+// Enable ISR - revalidate every 60 seconds
+export const revalidate = 60
+
+export default async function Home() {
+  // Fetch latest news from WordPress
+  const allNews = await getAllNews()
+  
+  // Get latest 3 news articles for the homepage
+  const latestNews = allNews.slice(0, 3)
+
   return (
     <>
       {/* JSON-LD Structured Data for Organization */}
@@ -71,7 +81,8 @@ export default function Home() {
 
       <div>
         <HeroSlider />
-        <NewsSection />
+        {/* Pass the fetched news to NewsSection */}
+        <NewsSection newsArticles={latestNews} />
         <AboutSection />
         <FeaturesSection />
         <CoursesSection />

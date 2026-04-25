@@ -2,41 +2,16 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { FaLinkedin, FaInstagram, FaYoutube } from "react-icons/fa";
-import { SiX } from "react-icons/si"; 
-import { FaPlay } from "react-icons/fa";
+import { FaLinkedin, FaInstagram, FaYoutube, FaPlay } from "react-icons/fa";
+import { SiX } from "react-icons/si";
 import Link from "next/link";
+import { formatDate, getNewsTypeDisplayName, NewsArticle } from "@/lib/wordpress";
 
-const newsItems = [
-  {
-    id: 1,
-    title: "Africana College of Professionals recent Graduation",
-    date: "June 15, 2025",
-    excerpt:
-      "Africana College, with Tangaza partnership held its recent graduation.",
-    image: "/slide1.jpeg",
-  },
-  {
-    id: 2,
-    title: "Student Entrepreneurs Making an Impact",
-    date: "May 28, 2025",
-    excerpt:
-      "Meet the Africana students whose innovative ideas are transforming communities.",
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    id: 3,
-    title: "Faith and Education: Our 2025 Vision",
-    date: "May 10, 2025",
-    excerpt:
-      "Africana College outlines its vision for integrating faith and academic excellence.",
-    image:
-      "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?auto=format&fit=crop&w=300&q=80",
-  },
-];
+interface NewsSectionProps {
+  newsArticles: NewsArticle[];
+}
 
-export const NewsSection = () => {
+export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -54,16 +29,14 @@ export const NewsSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* FEATURED VIDEO CARD */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-            
             {/* COVER IMAGE + PLAY ICON */}
             <div className="relative aspect-video cursor-pointer" onClick={() => setOpen(true)}>
               <Image
-                src="/banner2.jpeg" 
+                src="/banner2.jpeg"
                 alt="Africana Video"
                 fill
                 className="object-cover"
               />
-
               <div className="absolute inset-0 bg-white/40 flex items-center justify-center">
                 <div className="bg-white rounded-full p-4 shadow-lg animate-color-spread">
                   <FaPlay size={30} className="text-primary" />
@@ -137,40 +110,55 @@ export const NewsSection = () => {
             </div>
           </div>
 
-          {/* NEWS CARDS */}
+          {/* NEWS CARDS - FROM PROPS */}
           <div className="space-y-6">
-            {newsItems.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-xl shadow-md overflow-hidden flex hover:shadow-lg transition-shadow"
-              >
-                <div className="relative w-24 h-24 shrink-0">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
+            {newsArticles.map((article) => {
+              const metadata = article.newsMetadata;
+              const featuredImage = metadata?.featuredImage?.node?.mediaItemUrl;
+              const newsType = getNewsTypeDisplayName(metadata?.newsType || []);
+              const excerpt = metadata?.excerpt 
+                ? metadata.excerpt.substring(0, 100) 
+                : metadata?.body?.replace(/<[^>]*>/g, '').substring(0, 100);
 
-                <div className="p-4 flex-1">
-                  <h3 className="font-medium text-primary mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-gray-500 mb-2">{item.date}</p>
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {item.excerpt}
-                  </p>
-                  <a
-                    href="#"
-                    className="text-xs font-medium text-accent hover:text-accent/80 mt-2 inline-block"
-                  >
-                    Read More
-                  </a>
+              return (
+                <div
+                  key={article.id}
+                  className="bg-white rounded-xl shadow-md overflow-hidden flex hover:shadow-lg transition-shadow"
+                >
+                  <div className="relative w-24 h-24 shrink-0">
+                    <Image
+                      src={featuredImage || "/placeholder.jpg"}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="p-4 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-orange-600 uppercase">
+                        {newsType}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {formatDate(article.date)}
+                      </span>
+                    </div>
+                    <h3 className="font-medium text-primary mb-1 line-clamp-1">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {excerpt}...
+                    </p>
+                    <Link
+                      href={`/news/${article.slug}`}
+                      className="text-xs font-medium text-accent hover:text-accent/80 mt-2 inline-block"
+                    >
+                      Read More
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* PROMO CARD */}
@@ -204,37 +192,24 @@ export const NewsSection = () => {
         </div>
       </div>
 
-
       {/* VIDEO MODAL */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-9999 p-4"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setOpen(false)}
         >
           <div
             className="relative bg-black rounded-xl shadow-xl max-w-3xl w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* TOP-RIGHT X BUTTON */}
             <button
               onClick={() => setOpen(false)}
-              className="
-                absolute top-3 right-3 
-                bg-fuchsia-600 text-gray-900 
-                rounded-full p-2 
-                shadow-xl 
-                hover:bg-gray-100 
-                transition 
-                z-100000 
-                cursor-pointer
-                pointer-events-auto
-              "
+              className="absolute top-3 right-3 bg-gray-800 text-white rounded-full p-2 shadow-xl hover:bg-gray-700 transition z-10 cursor-pointer"
               aria-label="Close video"
             >
               ✕
             </button>
 
-            {/* VIDEO */}
             <div className="relative pb-[56.25%]">
               <iframe
                 src="https://www.youtube.com/embed/63CvxPVPMTs?autoplay=1&controls=1&rel=0"
@@ -244,7 +219,6 @@ export const NewsSection = () => {
               ></iframe>
             </div>
 
-            {/* BOTTOM CLOSE BUTTON (STILL INCLUDED) */}
             <button
               onClick={() => setOpen(false)}
               className="cursor-pointer w-full text-center bg-primary text-white py-3 font-medium hover:bg-primary/90 transition-colors"
@@ -254,7 +228,6 @@ export const NewsSection = () => {
           </div>
         </div>
       )}
-
     </section>
   );
 };

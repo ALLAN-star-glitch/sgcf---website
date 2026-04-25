@@ -93,6 +93,15 @@ export const Footer = () => {
                 <li>
                   <a href="#" className="text-white/80 hover:text-accent">Student Portal</a>
                 </li>
+                <li>
+                  <Link
+                    href="https://cms.acop.co.ke/acopcmsportalcollege"
+                    target="_blank"
+                    className="text-white/80 hover:text-accent"
+                  >
+                    CMS Portal
+                  </Link>
+                </li>
               </ul>
             </div>
 

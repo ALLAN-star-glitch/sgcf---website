@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getNewsBySlug, getAllNewsSlugs, formatDate, getNewsTypeDisplayName, decodeHtmlEntities, getAllNews } from '@/lib/wordpress'
 import type { Metadata } from 'next'
-import { Calendar, MapPin, Link as LinkIcon, AlertTriangle, Download, Share2, Bookmark, ChevronRight, Clock, Eye, MessageCircle, TrendingUp, Mail, Phone, Map, Facebook, Twitter, Instagram, Linkedin, Youtube, Globe, Award, Users, BookOpen, Sparkles } from 'lucide-react'
+import { Calendar, MapPin, Link as LinkIcon, AlertTriangle, Download, Share2, Bookmark, ChevronRight, Clock, Eye, MessageCircle, TrendingUp, Mail, Phone, Map, Facebook, Twitter, Instagram, Linkedin, Award, Sparkles } from 'lucide-react'
 
 // Generate static paths at build time from WordPress
 export async function generateStaticParams() {
@@ -66,12 +66,6 @@ async function getRelatedArticles(currentSlug: string, newsType: string[], curre
     .slice(0, 3)
 }
 
-// Get popular articles (most recent + relevant)
-async function getPopularArticles() {
-  const allNews = await getAllNews()
-  return allNews.slice(0, 4)
-}
-
 export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
@@ -89,14 +83,20 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   
   const authorName = article.author?.node?.firstName || article.author?.node?.lastName
     ? `${article.author?.node?.firstName || ''} ${article.author?.node?.lastName || ''}`.trim()
-    : null
+    : article.author?.node?.name || null
   
   const formattedDate = formatDate(article.date)
   const newsTypeDisplay = getNewsTypeDisplayName(metadata?.newsType || [])
   const decodedBody = decodeHtmlEntities(metadata?.body || '')
   
+  // Calculate reading time (dynamic)
+  const readingTime = Math.ceil(decodedBody.replace(/<[^>]*>/g, '').split(/\s+/).length / 200)
+  const wordCount = decodedBody.replace(/<[^>]*>/g, '').split(/\s+/).length
+  
   const relatedArticles = await getRelatedArticles(slug, metadata?.newsType || [], article.id)
-  const popularArticles = await getPopularArticles()
+
+  // Get author bio from WordPress user description
+  const authorBio = article.author?.node?.description || null
 
   const typeColors: Record<string, { bg: string; text: string; light: string }> = {
     event: { bg: 'bg-purple-600', text: 'text-purple-700', light: 'bg-purple-50' },
@@ -115,7 +115,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Hero Section - More Elegant */}
+      {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-purple-700 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -162,11 +162,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
               )}
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>{Math.ceil(decodedBody.replace(/<[^>]*>/g, '').split(/\s+/).length / 200)} min read</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                <span>1.2k views</span>
+                <span>{readingTime} min read</span>
               </div>
             </div>
           </div>
@@ -179,7 +175,6 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content - Left Column */}
             <article className="lg:w-2/3">
-              {/* Elegant Content Wrapper */}
               <div className="bg-white rounded-2xl">
                 {/* Alert Banner */}
                 {isAlert && metadata?.severityLevel && (
@@ -289,7 +284,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                   </div>
                 )}
 
-                {/* Main Content - Elegant Styling */}
+                {/* Main Content */}
                 <div className="prose prose-lg max-w-none 
                   prose-headings:text-gray-800 prose-headings:font-bold 
                   prose-h1:text-3xl prose-h1:mt-8 prose-h1:mb-4
@@ -368,9 +363,9 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
               </div>
             </article>
 
-            {/* Right Sidebar - Enhanced */}
+            {/* Right Sidebar */}
             <aside className="lg:w-1/3 space-y-6">
-              {/* Author Card - Enhanced */}
+              {/* Author Card - Dynamic from WordPress */}
               {authorName && (
                 <div className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-6 border border-gray-100 shadow-sm">
                   <div className="text-center">
@@ -386,29 +381,17 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                       </div>
                     )}
                     <h3 className="font-bold text-xl text-gray-800">{authorName}</h3>
-                    <p className="text-gray-500 text-sm mt-1">Staff Writer</p>
-                    <p className="text-gray-500 text-xs mt-2">Passionate about education and student success</p>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex justify-around">
-                      <div className="text-center">
-                        <div className="font-bold text-gray-800">12</div>
-                        <div className="text-xs text-gray-400">Articles</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-bold text-gray-800">1.5k+</div>
-                        <div className="text-xs text-gray-400">Views</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="font-bold text-gray-800">3</div>
-                        <div className="text-xs text-gray-400">Years</div>
-                      </div>
-                    </div>
+                    <p className="text-gray-500 text-sm mt-1">
+                      {article.author?.node?.nickname || 'Staff Writer'}
+                    </p>
+                    {authorBio && (
+                      <p className="text-gray-500 text-xs mt-2">{authorBio}</p>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* Quick Stats Card */}
+              {/* Quick Stats Card - Dynamic */}
               <div className="bg-gradient-to-r from-orange-50 to-purple-50 rounded-xl p-6 border border-orange-100">
                 <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-orange-500" />
@@ -417,11 +400,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 text-sm">Reading Time</span>
-                    <span className="font-semibold text-gray-800">{Math.ceil(decodedBody.replace(/<[^>]*>/g, '').split(/\s+/).length / 200)} minutes</span>
+                    <span className="font-semibold text-gray-800">{readingTime} minutes</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 text-sm">Word Count</span>
-                    <span className="font-semibold text-gray-800">{decodedBody.replace(/<[^>]*>/g, '').split(/\s+/).length}</span>
+                    <span className="font-semibold text-gray-800">{wordCount}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 text-sm">Category</span>

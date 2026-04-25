@@ -11,6 +11,9 @@ export interface Author {
     firstName: string | null;
     lastName: string | null;
     email: string | null;
+    nickname?: string | null;
+    description: string | null;
+    name: string | null;
     avatar: {
       url: string;
     } | null;
@@ -148,6 +151,7 @@ export async function getAllNews(): Promise<NewsArticle[]> {
             node {
               firstName
               lastName
+              description
               email
               avatar {
                 url
@@ -212,6 +216,7 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
           node {
             firstName
             lastName
+            description
             email
             avatar {
               url
@@ -346,3 +351,4 @@ export function getNewsTypeDisplayName(newsType: string[]): string {
   };
   return displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 }
+
