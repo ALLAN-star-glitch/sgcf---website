@@ -5,11 +5,21 @@ import Image from "next/image";
 import { FaLinkedin, FaInstagram, FaYoutube, FaPlay } from "react-icons/fa";
 import { SiX } from "react-icons/si";
 import Link from "next/link";
-import { formatDate, getNewsTypeDisplayName, NewsArticle } from "@/lib/wordpress";
+import { formatDate, getNewsTypeDisplayName, NewsArticle, decodeHtmlEntities } from "@/lib/wordpress";
 
 interface NewsSectionProps {
   newsArticles: NewsArticle[];
 }
+
+// Helper to clean excerpt
+const cleanExcerpt = (text: string | null | undefined, maxLength: number = 100): string => {
+  if (!text) return '';
+  const decoded = decodeHtmlEntities(text);
+  const plainText = decoded.replace(/<[^>]*>/g, '');
+  const cleaned = plainText.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.substring(0, maxLength) + '...';
+};
 
 export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
   const [open, setOpen] = useState(false);
@@ -29,7 +39,6 @@ export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* FEATURED VIDEO CARD */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-            {/* COVER IMAGE + PLAY ICON */}
             <div className="relative aspect-video cursor-pointer" onClick={() => setOpen(true)}>
               <Image
                 src="/banner2.jpeg"
@@ -44,7 +53,6 @@ export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
               </div>
             </div>
 
-            {/* CONTENT */}
             <div className="p-5 flex flex-col gap-3">
               <h3 className="font-playfair text-lg font-bold mb-1">
                 A Glimpse into Africana&apos;s Purpose-Driven Learning
@@ -60,7 +68,6 @@ export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
                   Director, Africana College of Professionals
                 </p>
 
-                {/* SOCIAL ICONS */}
                 <div className="flex gap-4 mt-2">
                   <a
                     href="https://www.linkedin.com/in/susan-gitau-phd-7a80b0117/"
@@ -110,15 +117,17 @@ export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
             </div>
           </div>
 
-          {/* NEWS CARDS - FROM PROPS */}
+          {/* NEWS CARDS - CORRECTED TO USE ROOT LEVEL FIELDS */}
           <div className="space-y-6">
             {newsArticles.map((article) => {
-              const metadata = article.newsMetadata;
-              const featuredImage = metadata?.featuredImage?.node?.mediaItemUrl;
-              const newsType = getNewsTypeDisplayName(metadata?.newsType || []);
-              const excerpt = metadata?.excerpt 
-                ? metadata.excerpt.substring(0, 100) 
-                : metadata?.body?.replace(/<[^>]*>/g, '').substring(0, 100);
+              // ✅ Use root level fields (not metadata)
+              const featuredImage = article.featuredImage?.node?.sourceUrl || null;
+              const newsType = getNewsTypeDisplayName(article.newsMetadata?.newsType || []);
+              
+              // ✅ Use root level excerpt or generate from body
+              const excerpt = article.excerpt 
+                ? cleanExcerpt(article.excerpt, 100)
+                : cleanExcerpt(article.newsMetadata?.body || '', 100);
 
               return (
                 <div
@@ -147,7 +156,7 @@ export const NewsSection = ({ newsArticles }: NewsSectionProps) => {
                       {article.title}
                     </h3>
                     <p className="text-sm text-gray-600 line-clamp-2">
-                      {excerpt}...
+                      {excerpt}
                     </p>
                     <Link
                       href={`/news/${article.slug}`}

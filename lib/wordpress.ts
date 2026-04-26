@@ -5,7 +5,10 @@ import he from 'he';
 
 const API_URL = process.env.WORDPRESS_API_URL;
 
-// Type definitions
+// ============================================
+// News Types (Existing)
+// ============================================
+
 export interface Author {
   node: {
     firstName: string | null;
@@ -72,8 +75,8 @@ export interface NewsArticle {
   title: string;
   date: string;
   slug: string;
-  excerpt: string;                    // ← Built-in WordPress excerpt
-  featuredImage: FeaturedImage | null; // ← Built-in WordPress featured image
+  excerpt: string;
+  featuredImage: FeaturedImage | null;
   author: Author | null;
   newsCategories: {
     nodes: NewsCategory[];
@@ -93,6 +96,64 @@ interface AllNewsResponse {
 interface SingleNewsResponse {
   news: NewsArticle | null;
 }
+
+// ============================================
+// Course Types (New)
+// ============================================
+
+export interface CourseCategory {
+  name: string;
+  slug: string;
+}
+
+export interface CourseTag {
+  name: string;
+  slug: string;
+}
+
+export interface CourseDetails {
+  courseType: string[];
+  courseCode: string | null;
+  duration: string | null;
+  fee: string | null;
+  intakeMonths: string[] | null;
+  studyMode: string[] | null;
+  leadInstructor: string | null;
+  specialization: string | null;
+  careerPathways: string | null;
+  entryRequirements: string | null;
+  syllabus: string | null;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  date: string;
+  slug: string;
+  excerpt: string;
+  featuredImage: FeaturedImage | null;
+  courseDetails: CourseDetails;
+  courseCategories: {
+    nodes: CourseCategory[];
+  };
+  courseTags: {
+    nodes: CourseTag[];
+  };
+}
+
+interface AllCoursesResponse {
+  allCourse: {
+    nodes: Course[];
+  };
+}
+
+interface SingleCourseResponse {
+  course: Course | null;
+}
+
+// ============================================
+// Shared Functions
+// ============================================
 
 async function fetchAPI<T>(
   query: string,
@@ -140,6 +201,68 @@ export function decodeHtmlEntities(text: string) {
   if (!text) return '';
   return he.decode(text);
 }
+
+// Helper function to format date
+export function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+// Helper function to get plain text excerpt from HTML body
+export function getExcerpt(html: string, maxLength: number = 160): string {
+  const plainText = stripHtmlTags(html);
+  if (plainText.length <= maxLength) return plainText;
+  return plainText.substring(0, maxLength) + '...';
+}
+
+// Helper function to get author display name
+export function getAuthorDisplayName(author: Author | null): string | null {
+  if (!author?.node) return null;
+  const { firstName, lastName } = author.node;
+  if (firstName || lastName) {
+    return `${firstName || ''} ${lastName || ''}`.trim();
+  }
+  return null;
+}
+
+// Helper function to get news type display name
+export function getNewsTypeDisplayName(newsType: string[]): string {
+  const type = newsType[0] || 'general';
+  const displayNames: Record<string, string> = {
+    announcement: 'Announcement',
+    event: 'Event',
+    alert: 'Alert',
+    deadline: 'Deadline',
+    admissions: 'Admissions',
+    general: 'News',
+    article: 'Article',
+    tip: 'Tip',
+    guide: 'Guide',
+    interview: 'Interview',
+    'thought-leadership': 'Thought Leadership',
+    'success-story': 'Success Story',
+  };
+  return displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
+}
+
+// Helper function to get course type display name
+export function getCourseTypeDisplayName(courseType: string[]): string {
+  const type = courseType[0] || 'course';
+  const displayNames: Record<string, string> = {
+    diploma: 'Diploma',
+    certificate: 'Certificate',
+    'short-course': 'Short Course',
+    professional: 'Professional Development',
+  };
+  return displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
+}
+
+// ============================================
+// News Functions
+// ============================================
 
 // Get all news posts
 export async function getAllNews(): Promise<NewsArticle[]> {
@@ -320,52 +443,6 @@ export async function getRecentNews(limit: number = 3): Promise<NewsArticle[]> {
   return allNews.slice(0, limit);
 }
 
-// Helper function to format date
-export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
-// Helper function to get plain text excerpt from HTML body
-export function getExcerpt(html: string, maxLength: number = 160): string {
-  const plainText = stripHtmlTags(html);
-  if (plainText.length <= maxLength) return plainText;
-  return plainText.substring(0, maxLength) + '...';
-}
-
-// Helper function to get author display name
-export function getAuthorDisplayName(author: Author | null): string | null {
-  if (!author?.node) return null;
-  const { firstName, lastName } = author.node;
-  if (firstName || lastName) {
-    return `${firstName || ''} ${lastName || ''}`.trim();
-  }
-  return null;
-}
-
-// Helper function to get news type display name
-export function getNewsTypeDisplayName(newsType: string[]): string {
-  const type = newsType[0] || 'general';
-  const displayNames: Record<string, string> = {
-    announcement: 'Announcement',
-    event: 'Event',
-    alert: 'Alert',
-    deadline: 'Deadline',
-    admissions: 'Admissions',
-    general: 'News',
-    article: 'Article',
-    tip: 'Tip',
-    guide: 'Guide',
-    interview: 'Interview',
-    'thought-leadership': 'Thought Leadership',
-    'success-story': 'Success Story',
-  };
-  return displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
-}
-
 export async function getAllTags(): Promise<NewsTag[]> {
   const allNews = await getAllNews();
   const tagsMap = new Map<string, string>();
@@ -381,4 +458,136 @@ export async function getAllTags(): Promise<NewsTag[]> {
   });
   
   return Array.from(tagsMap.entries()).map(([slug, name]) => ({ name, slug }));
+}
+
+// ============================================
+// Course Functions (New)
+// ============================================
+
+// Get all courses
+export async function getAllCourses(): Promise<Course[]> {
+  const data = await fetchAPI<AllCoursesResponse>(`
+    query GetAllCourses {
+      allCourse {
+        nodes {
+          id
+          title
+          date
+          slug
+          excerpt
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+              mediaDetails {
+                width
+                height
+              }
+            }
+          }
+          courseDetails {
+            courseType
+            courseCode
+            duration
+            fee
+            intakeMonths
+            studyMode
+            leadInstructor
+            specialization
+            careerPathways
+            entryRequirements
+            syllabus
+          }
+          courseCategories {
+            nodes {
+              name
+              slug
+            }
+          }
+          courseTags {
+            nodes {
+              name
+              slug
+            }
+          }
+        }
+      }
+    }
+  `);
+
+  return data?.allCourse?.nodes || [];
+}
+
+// Get single course by slug
+export async function getCourseBySlug(slug: string): Promise<Course | null> {
+  const data = await fetchAPI<SingleCourseResponse>(`
+    query GetCourseBySlug($id: ID!) {
+      course(id: $id, idType: SLUG) {
+        id
+        title
+        date
+        slug
+        excerpt
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+            mediaDetails {
+              width
+              height
+            }
+          }
+        }
+        courseDetails {
+          courseType
+          courseCode
+          duration
+          fee
+          intakeMonths
+          studyMode
+          leadInstructor
+          specialization
+          careerPathways
+          entryRequirements
+          syllabus
+        }
+        courseCategories {
+          nodes {
+            name
+            slug
+          }
+        }
+        courseTags {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  `, { variables: { id: slug } });
+  
+  return data?.course || null;
+}
+
+// Get all course slugs for static generation
+export async function getAllCourseSlugs(): Promise<{ slug: string }[]> {
+  const courses = await getAllCourses();
+  return courses.map((course) => ({ slug: course.slug }));
+}
+
+// Get courses by category slug
+export async function getCoursesByCategory(categorySlug: string): Promise<Course[]> {
+  const allCourses = await getAllCourses();
+  return allCourses.filter((course) =>
+    course.courseCategories?.nodes?.some((cat) => cat.slug === categorySlug)
+  );
+}
+
+// Get courses by type (from ACF courseType field)
+export async function getCoursesByType(courseType: string): Promise<Course[]> {
+  const allCourses = await getAllCourses();
+  return allCourses.filter((course) =>
+    course.courseDetails?.courseType?.includes(courseType)
+  );
 }
