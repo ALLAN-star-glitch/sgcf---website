@@ -123,6 +123,7 @@ export interface CourseDetails {
   careerPathways: string | null;
   entryRequirements: string | null;
   syllabus: string | null;
+  videoUrl: string | null;  // ← Add this
 }
 
 export interface Course {
@@ -142,7 +143,7 @@ export interface Course {
 }
 
 interface AllCoursesResponse {
-  allCourse: {
+  courses: {
     nodes: Course[];
   };
 }
@@ -460,7 +461,7 @@ export async function getAllTags(): Promise<NewsTag[]> {
   return Array.from(tagsMap.entries()).map(([slug, name]) => ({ name, slug }));
 }
 
-// ============================================
+/// ============================================
 // Course Functions (New)
 // ============================================
 
@@ -468,7 +469,7 @@ export async function getAllTags(): Promise<NewsTag[]> {
 export async function getAllCourses(): Promise<Course[]> {
   const data = await fetchAPI<AllCoursesResponse>(`
     query GetAllCourses {
-      allCourse {
+      courses {
         nodes {
           id
           title
@@ -497,6 +498,7 @@ export async function getAllCourses(): Promise<Course[]> {
             careerPathways
             entryRequirements
             syllabus
+            videoUrl
           }
           courseCategories {
             nodes {
@@ -515,7 +517,7 @@ export async function getAllCourses(): Promise<Course[]> {
     }
   `);
 
-  return data?.allCourse?.nodes || [];
+  return data?.courses?.nodes || [];
 }
 
 // Get single course by slug
@@ -550,6 +552,7 @@ export async function getCourseBySlug(slug: string): Promise<Course | null> {
           careerPathways
           entryRequirements
           syllabus
+          videoUrl
         }
         courseCategories {
           nodes {

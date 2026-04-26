@@ -1,18 +1,21 @@
-import React from 'react'
-import { CourseCard } from './CourseCard'
-import { courses } from '@/lib/constants/courses'
+'use client';
 
-
+import React from 'react';
+import { CourseCard } from './CourseCard';
+import { Course } from '@/lib/wordpress';
 
 interface CoursesGridProps {
-  activeCategory: string
+  courses: Course[];
+  activeCategory: string;
 }
 
-export function CoursesGrid({ activeCategory }: CoursesGridProps) {
-  const filteredCourses =
-    activeCategory === 'all'
-      ? courses
-      : courses.filter((course) => course.category === activeCategory)
+export function CoursesGrid({ courses, activeCategory }: CoursesGridProps) {
+  const filteredCourses = activeCategory === 'all'
+    ? courses
+    : courses.filter((course) => 
+        course.courseDetails?.courseType?.includes(activeCategory)
+      );
+
   return (
     <section className="bg-[#F8F6FF] py-16 px-4">
       <div className="max-w-7xl mx-auto">
@@ -29,11 +32,11 @@ export function CoursesGrid({ activeCategory }: CoursesGridProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
+              <CourseCard key={course.id} course={course} />
             ))}
           </div>
         )}
       </div>
     </section>
-  )
+  );
 }

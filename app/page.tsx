@@ -3,7 +3,7 @@ import { HeroSlider } from '@/components/home-page/HeroSlider'
 import { NewsSection } from '@/components/home-page/NewsSection'
 import { AboutSection } from '@/components/home-page/AboutSection'
 import { FeaturesSection } from '@/components/home-page/FeaturesSection'
-import { CoursesSection } from '@/components/home-page/CoursesSection'
+import { CoursesSectionWrapper } from '@/components/home-page/CoursesSectionWrapper'  // ← Updated import
 import { TestimonialsSection } from '@/components/home-page/TestmonialSection'
 import { getAllNews } from '@/lib/wordpress'
 
@@ -43,14 +43,10 @@ export const metadata: Metadata = {
   },
 }
 
-// Enable ISR - revalidate every 60 seconds
 export const revalidate = 60
 
 export default async function Home() {
-  // Fetch latest news from WordPress
   const allNews = await getAllNews()
-  
-  // Get latest 3 news articles for the homepage
   const latestNews = allNews.slice(0, 3)
 
   return (
@@ -81,13 +77,12 @@ export default async function Home() {
 
       <div>
         <HeroSlider />
-        {/* Pass the fetched news to NewsSection */}
         <NewsSection newsArticles={latestNews} />
         <AboutSection />
         <FeaturesSection />
-        <CoursesSection />
+        <CoursesSectionWrapper /> 
         <TestimonialsSection />
       </div>
     </>
-  )
+  );
 }
