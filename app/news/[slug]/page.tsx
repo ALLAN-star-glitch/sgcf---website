@@ -41,7 +41,6 @@ function getCategoryColor(categories: { name: string; slug: string }[] | undefin
   }
   return colors[categorySlug] || 'bg-gray-600'
 }
-
 // Generate metadata with OG image
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -57,22 +56,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const websiteUrl = 'https://www.acop.co.ke'
   const articleUrl = `${websiteUrl}/news/${article.slug}`
   
-  // --- FIX: Ensure the image URL is absolute and from the correct field ---
-  // The path 'article.newsMetadata?.featuredImage?.node?.mediaItemUrl' might be incorrect.
-  // Based on your GraphQL response, it should be: article.newsMetadata?.featuredImage?.node?.mediaItemUrl
-  const featuredImageNode = article.newsMetadata?.featuredImage?.node;
-  let ogImageUrl = null;
-  if (featuredImageNode && featuredImageNode.mediaItemUrl) {
-    // If the URL is relative, prepend the WordPress site URL
-    if (featuredImageNode.mediaItemUrl.startsWith('/')) {
-        ogImageUrl = `https://cms.acop.co.ke${featuredImageNode.mediaItemUrl}`;
-    } else {
-        ogImageUrl = featuredImageNode.mediaItemUrl;
-    }
+  // --- FIX: Get the featured image URL correctly ---
+  let ogImageUrl = `${websiteUrl}/acoplogo.jpg` // Default fallback
+  
+  // Try to get the featured image from WordPress
+  // Based on your working og:temporal:twitter:image, the correct path should be:
+  if (article.newsMetadata?.featuredImage?.node?.mediaItemUrl) {
+    ogImageUrl = article.newsMetadata.featuredImage.node.mediaItemUrl
   }
   
-  // If no featured image, use a default image (ensure this image exists)
-  const finalOgImageUrl = ogImageUrl || `${websiteUrl}/default-og-image.jpg`;
+  // If the URL is relative, make it absolute
+  if (ogImageUrl && ogImageUrl.startsWith('/')) {
+    ogImageUrl = `https://cms.acop.co.ke${ogImageUrl}`
+  }
   
   const description = article.newsMetadata?.excerpt 
     ? decodeHtmlEntities(article.newsMetadata.excerpt)
@@ -92,14 +88,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: new Date(article.date).toISOString(),
       images: [
         {
-          url: finalOgImageUrl,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: article.title,
         },
       ],
     },
-    // Twitter card section removed as requested
     alternates: {
       canonical: articleUrl,
     },
