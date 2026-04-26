@@ -26,8 +26,12 @@ export interface NewsCategory {
 }
 
 export interface FeaturedImageNode {
-  mediaItemUrl: string;
+  sourceUrl: string;
   altText: string | null;
+  mediaDetails?: {
+    width: number;
+    height: number;
+  };
 }
 
 export interface FeaturedImage {
@@ -46,12 +50,10 @@ export interface Attachment {
 export interface NewsMetadata {
   newsType: string[];
   body: string;
-  excerpt: string | null;
   eventDate: string | null;
   eventTime: string | null;
   eventVenue: string | null;
   eventLink: string | null;
-  featuredImage: FeaturedImage | null;
   deadlineDate: string | null;
   submissionLink: string | null;
   severityLevel: string | null;
@@ -70,12 +72,14 @@ export interface NewsArticle {
   title: string;
   date: string;
   slug: string;
+  excerpt: string;                    // ← Built-in WordPress excerpt
+  featuredImage: FeaturedImage | null; // ← Built-in WordPress featured image
   author: Author | null;
   newsCategories: {
     nodes: NewsCategory[];
   };
   newsTags: {
-    nodes: NewsTag[];  
+    nodes: NewsTag[];
   };
   newsMetadata: NewsMetadata;
 }
@@ -147,6 +151,17 @@ export async function getAllNews(): Promise<NewsArticle[]> {
           title
           date
           slug
+          excerpt
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+              mediaDetails {
+                width
+                height
+              }
+            }
+          }
           author {
             node {
               firstName
@@ -173,17 +188,10 @@ export async function getAllNews(): Promise<NewsArticle[]> {
           newsMetadata {
             newsType
             body
-            excerpt
             eventDate
             eventTime
             eventVenue
             eventLink
-            featuredImage {
-              node {
-                mediaItemUrl
-                altText
-              }
-            }
             deadlineDate
             submissionLink
             severityLevel
@@ -213,6 +221,17 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
         title
         date
         slug
+        excerpt
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+            mediaDetails {
+              width
+              height
+            }
+          }
+        }
         author {
           node {
             firstName
@@ -230,26 +249,19 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
             slug
           }
         }
-          newsTags {
+        newsTags {
           nodes {
             name
             slug
           }
-        } 
+        }
         newsMetadata {
           newsType
           body
-          excerpt
           eventDate
           eventTime
           eventVenue
           eventLink
-          featuredImage {
-            node {
-              mediaItemUrl
-              altText
-            }
-          }
           deadlineDate
           submissionLink
           severityLevel
@@ -353,7 +365,6 @@ export function getNewsTypeDisplayName(newsType: string[]): string {
   };
   return displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 }
-
 
 export async function getAllTags(): Promise<NewsTag[]> {
   const allNews = await getAllNews();

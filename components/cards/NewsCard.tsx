@@ -1,4 +1,5 @@
-import { NewsArticle, formatDate, getExcerpt } from '@/lib/wordpress'
+// components/cards/NewsCard.tsx
+import { NewsArticle, formatDate, decodeHtmlEntities } from '@/lib/wordpress'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -6,30 +7,31 @@ interface NewsCardProps {
   article: NewsArticle
 }
 
+// Helper to clean excerpt
+const cleanExcerpt = (text: string | null | undefined, maxLength: number = 120): string => {
+  if (!text) return '';
+  const decoded = decodeHtmlEntities(text);
+  const plainText = decoded.replace(/<[^>]*>/g, '');
+  const cleaned = plainText.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.substring(0, maxLength) + '...';
+}
+
 // Helper to get category display name
 function getCategoryDisplayName(categories: { name: string; slug: string }[] | undefined): string {
   if (!categories || categories.length === 0) return 'News'
-  
-  // Get the first category name
   const categoryName = categories[0].name
-  
-  // You can map specific slugs to custom display names if needed
   const displayNames: Record<string, string> = {
     admissions: 'Admissions',
     events: 'Events',
     blog: 'Blog',
     news: 'News',
   }
-  
   return displayNames[categoryName.toLowerCase()] || categoryName
 }
 
 export function NewsCard({ article }: NewsCardProps) {
-  const metadata = article.newsMetadata
-  const featuredImageUrl = metadata?.featuredImage?.node?.mediaItemUrl
-  const excerpt = metadata?.excerpt || getExcerpt(metadata?.body || '', 120)
-  
-  // Get the real WordPress category name
+  const featuredImageUrl = article.featuredImage?.node?.sourceUrl || null
   const categoryName = getCategoryDisplayName(article.newsCategories?.nodes)
 
   return (
@@ -55,7 +57,7 @@ export function NewsCard({ article }: NewsCardProps) {
           </Link>
         </h3>
         <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-          {excerpt}
+          {cleanExcerpt(article.excerpt) || cleanExcerpt(article.newsMetadata?.body || '', 120)}
         </p>
         <div className="flex items-center justify-between text-xs text-gray-400">
           <span>{formatDate(article.date)}</span>

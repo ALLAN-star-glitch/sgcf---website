@@ -3,8 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getNewsBySlug, getAllNewsSlugs, formatDate, decodeHtmlEntities, getAllNews } from '@/lib/wordpress'
 import type { Metadata } from 'next'
-import { Calendar, MapPin, Link as LinkIcon, AlertTriangle, Download, ChevronRight, Clock, Eye, MessageCircle, TrendingUp, Mail, Phone, Map, Award, Sparkles, FolderOpen } from 'lucide-react'
-
+import { Calendar, MapPin, Link as LinkIcon, AlertTriangle, Download, ChevronRight, Clock, Eye, MessageCircle, TrendingUp, Mail, Phone, Map, Award, Sparkles, FolderOpen, FileText, Tag } from 'lucide-react'
 import { ShareButtons } from '@/components/ShareButtons'
 
 // Generate static paths at build time from WordPress
@@ -31,7 +30,7 @@ function getCategoryDisplayName(categories: { name: string; slug: string }[] | u
 
 // Helper to get category badge color
 function getCategoryColor(categories: { name: string; slug: string }[] | undefined): string {
-  if (!categories || categories.length === 0) return 'bg-blue-600'
+  if (!categories || categories.length === 0) return 'bg-orange-600'
   const categorySlug = categories[0].slug.toLowerCase()
   const colors: Record<string, string> = {
     admissions: 'bg-green-600',
@@ -39,11 +38,10 @@ function getCategoryColor(categories: { name: string; slug: string }[] | undefin
     blog: 'bg-blue-600',
     news: 'bg-orange-600',
   }
-  return colors[categorySlug] || 'bg-gray-600'
+  return colors[categorySlug] || 'bg-orange-600'
 }
 
-// app/news/[slug]/page.tsx - Updated generateMetadata
-
+// Generate metadata with OG image
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
@@ -58,28 +56,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const websiteUrl = 'https://www.acop.co.ke'
   const articleUrl = `${websiteUrl}/news/${article.slug}`
   
-  // DEBUG: Log to server console
-  console.log('Article slug:', slug)
-  console.log('Featured image URL:', article.newsMetadata?.featuredImage?.node?.mediaItemUrl)
+  let ogImageUrl = `${websiteUrl}/acoplogo.jpg`
   
-  // Get the featured image URL
-  let ogImageUrl = `${websiteUrl}/acoplogo.jpg` // Default fallback
-  
-  // Check multiple possible paths for the image
-  const featuredImage = 
-    article.newsMetadata?.featuredImage?.node?.mediaItemUrl ||
-    null
-  
-  if (featuredImage) {
-    ogImageUrl = featuredImage
-    // Ensure URL is absolute
+  if (article.featuredImage?.node?.sourceUrl) {
+    ogImageUrl = article.featuredImage.node.sourceUrl
     if (ogImageUrl.startsWith('/')) {
       ogImageUrl = `https://cms.acop.co.ke${ogImageUrl}`
     }
   }
   
-  const description = article.newsMetadata?.excerpt 
-    ? decodeHtmlEntities(article.newsMetadata.excerpt)
+  const description = article.excerpt 
+    ? decodeHtmlEntities(article.excerpt).replace(/<[^>]*>/g, '').substring(0, 160)
     : article.newsMetadata?.body 
       ? decodeHtmlEntities(article.newsMetadata.body).replace(/<[^>]*>/g, '').substring(0, 160)
       : article.title
@@ -94,19 +81,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       siteName: 'Africana College of Professionals',
       type: 'article',
       publishedTime: new Date(article.date).toISOString(),
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: article.title,
-        },
-      ],
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: article.title }],
     },
-    // No twitter card - let openGraph handle both platforms
-    alternates: {
-      canonical: articleUrl,
-    },
+    alternates: { canonical: articleUrl },
   }
 }
 
@@ -128,8 +105,6 @@ async function getRelatedArticles(currentSlug: string, currentCategories: { slug
 export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
-
-
 
   if (!article) {
     notFound()
@@ -158,16 +133,21 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   const relatedArticles = await getRelatedArticles(slug, article.newsCategories?.nodes, article.id)
   const authorBio = article.author?.node?.description || null
 
+  function getExcerptFromBody(body: string, maxLength: number): string {
+    const plainText = body.replace(/<[^>]*>/g, '')
+    if (plainText.length <= maxLength) return plainText
+    return plainText.substring(0, maxLength) + '...'
+  }
+
   const typeColors: Record<string, { bg: string; text: string; light: string }> = {
     event: { bg: 'bg-purple-600', text: 'text-purple-700', light: 'bg-purple-50' },
     alert: { bg: 'bg-red-600', text: 'text-red-700', light: 'bg-red-50' },
     deadline: { bg: 'bg-orange-600', text: 'text-orange-700', light: 'bg-orange-50' },
     admissions: { bg: 'bg-green-600', text: 'text-green-700', light: 'bg-green-50' },
-    general: { bg: 'bg-blue-600', text: 'text-blue-700', light: 'bg-blue-50' },
+    general: { bg: 'bg-orange-600', text: 'text-orange-700', light: 'bg-orange-50' },
   }
 
   const typeColor = typeColors[primaryType] || typeColors.general
-
   const severityColors = {
     critical: 'bg-red-50 border-red-500 text-red-800',
     warning: 'bg-yellow-50 border-yellow-500 text-yellow-800',
@@ -176,17 +156,14 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-purple-700 overflow-hidden">
+      <div className="relative bg-gradient-to-r from-orange-600 to-purple-700 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
         
         <div className="container mx-auto px-4 py-16 md:py-20 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <Link
-              href="/news"
-              className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors text-sm group"
-            >
+            <Link href="/news" className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors text-sm group">
               <ChevronRight className="w-4 h-4 mr-1 rotate-180 group-hover:-translate-x-1 transition-transform" />
               Back to News
             </Link>
@@ -208,13 +185,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                 <div className="flex items-center gap-2">
                   {article.author?.node?.avatar?.url && (
                     <div className="relative w-6 h-6 rounded-full overflow-hidden ring-2 ring-white/30">
-                      <Image
-                        src={article.author.node.avatar.url}
-                        alt={authorName}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                      <Image src={article.author.node.avatar.url} alt={authorName} fill className="object-cover" unoptimized />
                     </div>
                   )}
                   <span>By {authorName}</span>
@@ -248,12 +219,12 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                 )}
 
                 {/* Featured Image */}
-                {metadata?.featuredImage?.node?.mediaItemUrl && (
+                {article.featuredImage?.node?.sourceUrl && (
                   <div className="mb-10">
                     <div className="relative w-full h-[350px] md:h-[450px] rounded-2xl overflow-hidden shadow-xl">
                       <Image
-                        src={metadata.featuredImage.node.mediaItemUrl}
-                        alt={metadata.featuredImage.node.altText || article.title}
+                        src={article.featuredImage.node.sourceUrl}
+                        alt={article.featuredImage.node.altText || article.title}
                         fill
                         className="object-cover"
                         priority
@@ -262,15 +233,15 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                       />
                     </div>
                     <p className="text-center text-sm text-gray-400 mt-3 italic">
-                      {metadata.featuredImage.node.altText || article.title}
+                      {article.featuredImage.node.altText || article.title}
                     </p>
                   </div>
                 )}
 
                 {/* Event Details Card */}
                 {isEvent && (metadata?.eventDate || metadata?.eventVenue || metadata?.eventLink) && (
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-6 mb-8">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <div className="bg-purple-50 rounded-2xl p-6 mb-8">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-purple-700">
                       <Sparkles className="w-5 h-5 text-purple-600" />
                       Event Details
                     </h3>
@@ -291,9 +262,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                       {metadata?.eventLink && (
                         <div className="flex items-center gap-2">
                           <LinkIcon className="w-4 h-4 text-purple-600" />
-                          <a href={metadata.eventLink} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">
-                            Event Link
-                          </a>
+                          <a href={metadata.eventLink} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">Event Link</a>
                         </div>
                       )}
                     </div>
@@ -302,131 +271,100 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
                 {/* Deadline Banner */}
                 {isDeadline && (metadata?.deadlineDate || metadata?.submissionLink) && (
-                  <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-6 mb-8">
-                    <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                      <AlertTriangle className="w-5 h-5 text-red-600" />
+                  <div className="bg-orange-50 rounded-2xl p-6 mb-8">
+                    <h3 className="font-bold text-lg mb-2 flex items-center gap-2 text-orange-700">
+                      <AlertTriangle className="w-5 h-5 text-orange-600" />
                       Application Deadline
                     </h3>
-                    {metadata?.deadlineDate && (
-                      <p className="text-2xl font-bold text-red-600 mb-3">{metadata.deadlineDate}</p>
-                    )}
+                    {metadata?.deadlineDate && <p className="text-2xl font-bold text-orange-600 mb-3">{metadata.deadlineDate}</p>}
                     {metadata?.submissionLink && (
-                      <a
-                        href={metadata.submissionLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors"
-                      >
-                        Apply Now →
-                      </a>
+                      <a href={metadata.submissionLink} target="_blank" rel="noopener noreferrer" className="inline-block bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors">Apply Now →</a>
                     )}
                   </div>
                 )}
 
                 {/* Admissions Banner */}
                 {isAdmissions && (
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mb-8">
-                    <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                  <div className="bg-green-50 rounded-2xl p-6 mb-8">
+                    <h3 className="font-bold text-lg mb-2 flex items-center gap-2 text-green-700">
                       <Award className="w-5 h-5 text-green-600" />
                       {metadata?.intakeSemester || 'Admissions Open'}
                     </h3>
                     <p className="text-gray-600 mb-3">Take the first step towards your professional career</p>
                     {metadata?.masomoPortalLink && (
-                      <a
-                        href={metadata.masomoPortalLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-                      >
-                        Apply via Portal →
-                      </a>
+                      <a href={metadata.masomoPortalLink} target="_blank" rel="noopener noreferrer" className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">Apply via Portal →</a>
                     )}
                   </div>
                 )}
 
                 {/* Main Content */}
-                <div className="prose prose-lg max-w-none 
-                  prose-headings:text-gray-800 prose-headings:font-bold 
-                  prose-h1:text-3xl prose-h1:mt-8 prose-h1:mb-4
-                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-5 prose-h2:pb-2 prose-h2:border-b prose-h2:border-gray-100
-                  prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-                  prose-p:text-gray-600 prose-p:leading-relaxed prose-p:mb-5
-                  prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline prose-a:transition-colors
-                  prose-ul:text-gray-600 prose-ul:list-disc prose-ul:pl-5 prose-ul:space-y-1
-                  prose-ol:text-gray-600 prose-ol:list-decimal prose-ol:pl-5 prose-ol:space-y-1
-                  prose-li:mb-1
-                  prose-strong:text-gray-800 prose-strong:font-semibold
-                  prose-blockquote:border-l-4 prose-blockquote:border-orange-500 prose-blockquote:pl-5 prose-blockquote:italic prose-blockquote:text-gray-600
-                  prose-img:rounded-xl prose-img:shadow-md prose-img:my-6
-                  prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-                  prose-pre:bg-gray-800 prose-pre:text-white prose-pre:rounded-xl prose-pre:p-4
-                  first:prose-p:mt-0
-                  last:prose-p:mb-0"
+                <div className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-5 prose-h2:pb-2 prose-h2:border-b prose-h2:border-gray-100 prose-h3:text-xl prose-p:text-gray-600 prose-p:leading-relaxed prose-a:text-orange-600 prose-ul:text-gray-600 prose-ul:list-disc prose-ul:pl-5 prose-strong:text-gray-800 prose-blockquote:border-l-4 prose-blockquote:border-orange-500 prose-blockquote:italic prose-img:rounded-xl prose-img:shadow-md"
                   dangerouslySetInnerHTML={{ __html: decodedBody }}
                 />
-
-                {/* Attachment Download */}
-                {metadata?.attachment?.node?.mediaItemUrl && (
-                  <div className="mt-10 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                    <a
-                      href={metadata.attachment.node.mediaItemUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-gray-700 hover:text-orange-600 transition-colors"
-                    >
-                      <Download className="w-4 h-4" />
-                      Download: {metadata.attachment.node.title || 'Attachment'}
-                    </a>
-                  </div>
-                )}
-
-                {/* Tags */}
-                {article.newsTags?.nodes?.length > 0 && (
-                  <div className="mt-10 pt-6 border-t border-gray-100">
-                    <div className="flex flex-wrap gap-2">
-                      {article.newsTags.nodes.map((tag) => (
-                        <Link
-                          key={tag.slug}
-                          href={`/news/tag/${tag.slug}`}
-                          className="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-sm hover:bg-gray-200 hover:text-gray-800 transition-colors"
-                        >
-                          #{tag.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-        
               </div>
             </article>
 
-            {/* Right Sidebar */}
+            {/* Right Sidebar - Using Brand Colors */}
             <aside className="lg:w-1/3 space-y-6">
-            <ShareButtons title={article.title} />
+              <ShareButtons title={article.title} />
+
+              {/* Attachment Card */}
+              {metadata?.attachment?.node?.mediaItemUrl && (
+                <div className="bg-orange-50 rounded-xl p-6 border border-orange-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <h3 className="font-bold text-gray-800">Download Resource</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Download the attached document for more information about this article.
+                  </p>
+                  <a
+                    href={metadata.attachment.node.mediaItemUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300"
+                  >
+                    <Download className="w-4 h-4" />
+                    {metadata.attachment.node.title || 'Download Attachment'}
+                  </a>
+                </div>
+              )}
+
+              {/* Tags Section - Moved to Sidebar */}
+              {article.newsTags?.nodes?.length > 0 && (
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <Tag className="w-5 h-5 text-orange-500" />
+                    Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {article.newsTags.nodes.map((tag) => (
+                      <Link
+                        key={tag.slug}
+                        href={`/news/tag/${tag.slug}`}
+                        className="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-sm hover:bg-orange-100 hover:text-orange-600 transition-colors"
+                      >
+                        #{tag.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Author Card */}
               {authorName && (
-                <div className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-6 border border-gray-100 shadow-sm">
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                   <div className="text-center">
                     {article.author?.node?.avatar?.url && (
                       <div className="relative w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-orange-100">
-                        <Image
-                          src={article.author.node.avatar.url}
-                          alt={authorName}
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
+                        <Image src={article.author.node.avatar.url} alt={authorName} fill className="object-cover" unoptimized />
                       </div>
                     )}
                     <h3 className="font-bold text-xl text-gray-800">{authorName}</h3>
-                    <p className="text-gray-500 text-sm mt-1">
-                      {article.author?.node?.nickname || 'Staff Writer'}
-                    </p>
-                    {authorBio && (
-                      <p className="text-gray-500 text-xs mt-2">{authorBio}</p>
-                    )}
+                    <p className="text-gray-500 text-sm mt-1">{article.author?.node?.nickname || 'Staff Writer'}</p>
+                    {authorBio && <p className="text-gray-500 text-xs mt-2">{authorBio}</p>}
                   </div>
                 </div>
               )}
@@ -440,11 +378,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {article.newsCategories.nodes.map((cat) => (
-                      <Link
-                        key={cat.slug}
-                        href={`/news?category=${cat.slug}`}
-                        className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-orange-100 hover:text-orange-600 transition-colors"
-                      >
+                      <Link key={cat.slug} href={`/news?category=${cat.slug}`} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-orange-100 hover:text-orange-600 transition-colors">
                         {cat.name}
                       </Link>
                     ))}
@@ -453,7 +387,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
               )}
 
               {/* Quick Stats Card */}
-              <div className="bg-gradient-to-r from-orange-50 to-purple-50 rounded-xl p-6 border border-orange-100">
+              <div className="bg-orange-50 rounded-xl p-6 border border-orange-100">
                 <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-orange-500" />
                   Quick Stats
@@ -515,35 +449,20 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
                   </h3>
                   <div className="space-y-4">
                     {relatedArticles.map((related) => (
-                      <Link
-                        key={related.id}
-                        href={`/news/${related.slug}`}
-                        className="group flex gap-3 hover:bg-gray-50 p-2 rounded-lg transition-all duration-300"
-                      >
-                        {related.newsMetadata?.featuredImage?.node?.mediaItemUrl && (
+                      <Link key={related.id} href={`/news/${related.slug}`} className="group flex gap-3 hover:bg-gray-50 p-2 rounded-lg transition-all duration-300">
+                        {related.featuredImage?.node?.sourceUrl && (
                           <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                            <Image
-                              src={related.newsMetadata.featuredImage.node.mediaItemUrl}
-                              alt={related.title}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-500"
-                              unoptimized
-                            />
+                            <Image src={related.featuredImage.node.sourceUrl} alt={related.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
                           </div>
                         )}
                         <div>
-                          <h4 className="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-2 text-sm">
-                            {related.title}
-                          </h4>
+                          <h4 className="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors line-clamp-2 text-sm">{related.title}</h4>
                           <p className="text-xs text-gray-400 mt-1">{formatDate(related.date)}</p>
                         </div>
                       </Link>
                     ))}
                   </div>
-                  <Link
-                    href="/news"
-                    className="inline-flex items-center text-orange-600 text-sm font-medium mt-4 hover:text-purple-700 transition-colors"
-                  >
+                  <Link href="/news" className="inline-flex items-center text-orange-600 text-sm font-medium mt-4 hover:text-purple-700 transition-colors">
                     Browse All News
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
@@ -553,34 +472,19 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
               {/* Newsletter Signup */}
               <div className="bg-gradient-to-r from-orange-600 to-purple-600 rounded-xl p-6 text-white">
                 <h3 className="font-bold text-lg mb-2">Subscribe to Our Newsletter</h3>
-                <p className="text-white/80 text-sm mb-4">
-                  Get the latest updates and news directly in your inbox.
-                </p>
+                <p className="text-white/80 text-sm mb-4">Get the latest updates and news directly in your inbox.</p>
                 <div className="flex flex-col gap-2">
-                  <input
-                    type="email"
-                    placeholder="Your email address"
-                    className="px-4 py-2 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white"
-                  />
-                  <button className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors">
-                    Subscribe
-                  </button>
+                  <input type="email" placeholder="Your email address" className="px-4 py-2 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white" />
+                  <button className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors">Subscribe</button>
                 </div>
                 <p className="text-white/60 text-xs mt-3">No spam, unsubscribe anytime.</p>
               </div>
 
               {/* CTA Card */}
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-100 text-center">
+              <div className="bg-orange-50 rounded-xl p-6 border border-orange-100 text-center">
                 <h3 className="font-bold text-gray-800 mb-2">🚀 Ready to Apply?</h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  Start your journey at Africana College today
-                </p>
-                <Link
-                  href="https://form.jotform.com/253171134791556"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-green-600 text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors w-full text-center"
-                >
+                <p className="text-gray-600 text-sm mb-4">Start your journey at Africana College today</p>
+                <Link href="https://form.jotform.com/253171134791556" target="_blank" rel="noopener noreferrer" className="inline-block bg-orange-600 text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-orange-700 transition-colors w-full text-center">
                   Apply Now
                 </Link>
               </div>
@@ -588,24 +492,14 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           </div>
 
           {/* Bottom CTA Section */}
-          <div className="mt-12 p-8 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl text-center text-white shadow-xl">
+          <div className="mt-12 p-8 bg-gradient-to-r from-orange-600 to-purple-700 rounded-2xl text-center text-white shadow-xl">
             <h3 className="text-2xl font-bold mb-3">Start Your Professional Journey Today</h3>
-            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Join Africana College of Professionals and take the first step towards a rewarding career
-            </p>
+            <p className="text-white/90 mb-6 max-w-2xl mx-auto">Join Africana College of Professionals and take the first step towards a rewarding career</p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link
-                href="https://form.jotform.com/253171134791556"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors"
-              >
+              <Link href="https://form.jotform.com/253171134791556" target="_blank" rel="noopener noreferrer" className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                 Apply Now
               </Link>
-              <Link
-                href="/courses"
-                className="bg-transparent border-2 border-white text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/10 transition-colors"
-              >
+              <Link href="/courses" className="bg-transparent border-2 border-white text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/10 transition-colors">
                 Explore Courses
               </Link>
             </div>

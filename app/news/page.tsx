@@ -1,5 +1,5 @@
 import { NewsCard } from '@/components/cards/NewsCard'
-import { getAllNews, NewsArticle, getNewsTypeDisplayName, formatDate, decodeHtmlEntities } from '@/lib/wordpress'
+import { getAllNews, NewsArticle, formatDate, decodeHtmlEntities } from '@/lib/wordpress'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -51,6 +51,23 @@ export const metadata: Metadata = {
 // Enable ISR - revalidate every 60 seconds
 export const revalidate = 60
 
+// Helper function to clean excerpt (strip HTML tags and decode entities)
+const cleanExcerpt = (text: string | null | undefined, maxLength: number = 150): string => {
+  if (!text) return '';
+  
+  // Decode HTML entities first (e.g., &nbsp; → space, &#8230; → ...)
+  const decoded = decodeHtmlEntities(text);
+  
+  // Then strip HTML tags
+  const plainText = decoded.replace(/<[^>]*>/g, '');
+  
+  // Clean up whitespace (multiple spaces to single space)
+  const cleaned = plainText.replace(/\s+/g, ' ').trim();
+  
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.substring(0, maxLength) + '...';
+}
+
 // Get unique parent categories from news articles
 function getUniqueCategories(articles: NewsArticle[]): { name: string; slug: string }[] {
   const categoriesMap = new Map<string, string>()
@@ -58,8 +75,6 @@ function getUniqueCategories(articles: NewsArticle[]): { name: string; slug: str
   articles.forEach(article => {
     if (article.newsCategories?.nodes) {
       article.newsCategories.nodes.forEach(cat => {
-        // Only show parent categories (News, Admissions, Events, Blog)
-        // You can adjust this logic based on your needs
         if (!categoriesMap.has(cat.slug)) {
           categoriesMap.set(cat.slug, cat.name)
         }
@@ -70,6 +85,11 @@ function getUniqueCategories(articles: NewsArticle[]): { name: string; slug: str
   return Array.from(categoriesMap.entries()).map(([slug, name]) => ({ name, slug }))
 }
 
+// Helper to get featured image URL
+const getFeaturedImageUrl = (article: NewsArticle) => {
+  return article.featuredImage?.node?.sourceUrl || null
+}
+
 export default async function NewsPage({
   searchParams,
 }: {
@@ -77,7 +97,6 @@ export default async function NewsPage({
 }) {
   const { category } = await searchParams
   const allArticles = await getAllNews()
-
 
   // Filter by WordPress category if selected
   const newsArticles = category 
@@ -91,19 +110,6 @@ export default async function NewsPage({
   // Featured article (first one)
   const featuredArticle = newsArticles[0]
   const remainingArticles = newsArticles.slice(1)
-
-  // Helper to get excerpt from body
-  const getExcerpt = (body: string, maxLength: number = 120) => {
-    const decodedBody = decodeHtmlEntities(body || '');
-    const plainText = decodedBody.replace(/<[^>]*>/g, '');
-    if (plainText.length <= maxLength) return plainText;
-    return plainText.substring(0, maxLength) + '...';
-  }
-
-  // Helper to get featured image URL
-  const getFeaturedImageUrl = (article: NewsArticle) => {
-    return article.newsMetadata?.featuredImage?.node?.mediaItemUrl || null
-  }
 
   return (
     <main className="min-h-screen bg-white">
@@ -146,55 +152,54 @@ export default async function NewsPage({
         </div>
       </div>
 
-     {/* Featured Article */}
-    {featuredArticle && (
-      <section className="container mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-l-8 border-orange-500">
-          <div className="md:flex">
-            <div className="md:w-1/2 relative min-h-[300px] md:min-h-full">
-              {getFeaturedImageUrl(featuredArticle) ? (
-                <Image
-                  src={getFeaturedImageUrl(featuredArticle)!}
-                  alt={featuredArticle.title}
-                  fill
-                  className="object-cover"
-                  priority
-                  unoptimized
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              ) : (
-                <div className="w-full h-64 md:h-full bg-gradient-to-br from-orange-100 to-purple-100 flex items-center justify-center">
-                  <span className="text-orange-500 text-6xl">📰</span>
-                </div>
-              )}
-            </div>
-            <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
-              <span className="text-orange-500 text-sm font-semibold uppercase tracking-wide">
-                {featuredArticle.newsCategories?.nodes?.[0]?.name || 'News'}
-              </span>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mt-2 mb-3">
-                {featuredArticle.title}
-              </h2>
-              {/* EXCERPT - This is the correct line */}
-              <p className="text-gray-600 mb-4">
-                {featuredArticle.newsMetadata?.excerpt || getExcerpt(featuredArticle.newsMetadata?.body || '', 150)}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
-                  {formatDate(featuredArticle.date)}
+      {/* Featured Article */}
+      {featuredArticle && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-l-8 border-orange-500">
+            <div className="md:flex">
+              <div className="md:w-1/2 relative min-h-[300px] md:min-h-full">
+                {getFeaturedImageUrl(featuredArticle) ? (
+                  <Image
+                    src={getFeaturedImageUrl(featuredArticle)!}
+                    alt={featuredArticle.title}
+                    fill
+                    className="object-cover"
+                    priority
+                    unoptimized
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                ) : (
+                  <div className="w-full h-64 md:h-full bg-gradient-to-br from-orange-100 to-purple-100 flex items-center justify-center">
+                    <span className="text-orange-500 text-6xl">📰</span>
+                  </div>
+                )}
+              </div>
+              <div className="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+                <span className="text-orange-500 text-sm font-semibold uppercase tracking-wide">
+                  {featuredArticle.newsCategories?.nodes?.[0]?.name || 'News'}
                 </span>
-                <Link
-                  href={`/news/${featuredArticle.slug}`}
-                  className="inline-flex items-center text-orange-600 font-semibold hover:text-purple-700 transition-colors"
-                >
-                  Read More →
-                </Link>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mt-2 mb-3">
+                  {featuredArticle.title}
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  {cleanExcerpt(featuredArticle.excerpt) || cleanExcerpt(featuredArticle.newsMetadata?.body || '', 150)}
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">
+                    {formatDate(featuredArticle.date)}
+                  </span>
+                  <Link
+                    href={`/news/${featuredArticle.slug}`}
+                    className="inline-flex items-center text-orange-600 font-semibold hover:text-purple-700 transition-colors"
+                  >
+                    Read More →
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    )}
+        </section>
+      )}
 
       {/* News Grid */}
       <section className="container mx-auto px-4 py-12">

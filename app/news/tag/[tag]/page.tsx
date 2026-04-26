@@ -9,6 +9,16 @@ import { ChevronRight } from 'lucide-react';
 // Enable ISR - revalidate every 60 seconds
 export const revalidate = 60;
 
+// Helper to clean excerpt (strip HTML tags and decode entities)
+const cleanExcerpt = (text: string | null | undefined, maxLength: number = 120): string => {
+  if (!text) return '';
+  const decoded = decodeHtmlEntities(text);
+  const plainText = decoded.replace(/<[^>]*>/g, '');
+  const cleaned = plainText.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.substring(0, maxLength) + '...';
+};
+
 // Generate static params for all tags to make them static at build time
 export async function generateStaticParams() {
   const allNews = await getAllNews();
@@ -59,12 +69,14 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredArticles.map((article: any) => {
-            const metadata = article.newsMetadata;
-            const featuredImage = metadata?.featuredImage?.node?.mediaItemUrl;
-            const newsType = getNewsTypeDisplayName(metadata?.newsType || []);
-            const excerpt = metadata?.excerpt 
-              ? metadata.excerpt.substring(0, 120) 
-              : metadata?.body?.replace(/<[^>]*>/g, '').substring(0, 120);
+            // Use built-in WordPress fields (not ACF)
+            const featuredImage = article.featuredImage?.node?.sourceUrl || null;
+            const newsType = getNewsTypeDisplayName(article.newsMetadata?.newsType || []);
+            
+            // Use built-in excerpt or clean from body
+            const excerpt = article.excerpt 
+              ? cleanExcerpt(article.excerpt, 120)
+              : cleanExcerpt(article.newsMetadata?.body || '', 120);
             
             return (
               <article key={article.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow group">
@@ -89,7 +101,7 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
                       {article.title}
                     </Link>
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-3">{excerpt}...</p>
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-3">{excerpt}</p>
                   <Link href={`/news/${article.slug}`} className="inline-flex items-center text-orange-600 font-semibold text-sm hover:text-purple-700 transition-colors">
                     Read More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
