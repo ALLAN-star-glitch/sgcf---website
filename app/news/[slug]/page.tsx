@@ -42,8 +42,7 @@ function getCategoryColor(categories: { name: string; slug: string }[] | undefin
   return colors[categorySlug] || 'bg-gray-600'
 }
 
-// app/news/[slug]/page.tsx - Updated generateMetadata
-
+// Generate metadata with OG image
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
@@ -58,25 +57,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const websiteUrl = 'https://www.acop.co.ke'
   const articleUrl = `${websiteUrl}/news/${article.slug}`
   
-  // DEBUG: Log to server console
-  console.log('Article slug:', slug)
-  console.log('Featured image URL:', article.newsMetadata?.featuredImage?.node?.mediaItemUrl)
-  
-  // Get the featured image URL
-  let ogImageUrl = `${websiteUrl}/acoplogo.jpg` // Default fallback
-  
-  // Check multiple possible paths for the image
-  const featuredImage = 
-    article.newsMetadata?.featuredImage?.node?.mediaItemUrl ||
-    null
-  
-  if (featuredImage) {
-    ogImageUrl = featuredImage
-    // Ensure URL is absolute
-    if (ogImageUrl.startsWith('/')) {
-      ogImageUrl = `https://cms.acop.co.ke${ogImageUrl}`
-    }
-  }
+  const featuredImageUrl = article.newsMetadata?.featuredImage?.node?.mediaItemUrl || null
   
   const description = article.newsMetadata?.excerpt 
     ? decodeHtmlEntities(article.newsMetadata.excerpt)
@@ -94,16 +75,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       siteName: 'Africana College of Professionals',
       type: 'article',
       publishedTime: new Date(article.date).toISOString(),
-      images: [
+      images: featuredImageUrl ? [
         {
-          url: ogImageUrl,
+          url: featuredImageUrl,
           width: 1200,
           height: 630,
           alt: article.title,
         },
-      ],
+      ] : [],
     },
-    // No twitter card - let openGraph handle both platforms
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: description,
+      images: featuredImageUrl ? [featuredImageUrl] : [],
+    },
     alternates: {
       canonical: articleUrl,
     },
