@@ -7,27 +7,27 @@ import { Testimonials } from '@/components/admissions/Testmonials'
 import { FinalCTA } from '@/components/admissions/FinalCta'
 
 export const metadata: Metadata = {
-  title: 'Admissions | Africana College of Professionals',
+  title: 'Admission | Africana College of Professionals',
   description:
     'Apply for admission at Africana College of Professionals in Kenya. Learn about application requirements, admission steps, scholarships, and enrollment timelines for diploma and certificate programs.',
   keywords: [
-    'Africana College admissions',
+    'Africana College admission',
     'college admission Kenya',
     'apply for college Kenya',
-    'diploma admissions',
-    'certificate course admissions',
+    'diploma admission',
+    'certificate course admission',
     'professional college Kenya',
     'higher education Kenya',
   ].join(', '),
   robots: 'index, follow',
   alternates: {
-    canonical: 'https://www.acop.co.ke/admissions',
+    canonical: 'https://www.acop.co.ke/admission',
   },
   openGraph: {
-    title: 'Admissions | Africana College of Professionals',
+    title: 'Admission | Africana College of Professionals',
     description:
       'Start your admission journey at Africana College of Professionals. Explore requirements, scholarships, and application steps for professional programs in Kenya.',
-    url: 'https://www.acop.co.ke/admissions',
+    url: 'https://www.acop.co.ke/admission',
     siteName: 'Africana College of Professionals',
     type: 'website',
     images: [
@@ -63,7 +63,7 @@ export default function AdmissionsPage() {
             },
             department: {
               '@type': 'EducationalOccupationalProgram',
-              name: 'Admissions',
+              name: 'Admission',
               description:
                 'Admissions process for diploma, certificate, and professional courses at Africana College of Professionals.',
               educationalCredentialAwarded: [
