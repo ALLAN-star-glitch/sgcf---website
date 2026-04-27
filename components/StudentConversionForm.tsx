@@ -1,4 +1,3 @@
-// components/StudentConversionForm.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -13,27 +12,43 @@ export function StudentConversionForm() {
 
     if (!ref.current) return;
 
-    // Clear previous instance
     ref.current.innerHTML = "";
 
-    // Create HubSpot embed container
-    const container = document.createElement("div");
-    container.className = "hs-form-frame";
-    container.setAttribute("data-region", "eu1");
-    container.setAttribute(
-      "data-form-id",
-      "8d0817d9-373a-4a01-a512-234d542fab1e"
+    const renderForm = () => {
+      if (!ref.current) return;
+
+      const container = document.createElement("div");
+      container.className = "hs-form-frame";
+      container.setAttribute("data-region", "eu1");
+      container.setAttribute(
+        "data-form-id",
+        "8d0817d9-373a-4a01-a512-234d542fab1e"
+      );
+      container.setAttribute("data-portal-id", "144428117");
+
+      ref.current.appendChild(container);
+
+      setTimeout(() => setLoading(false), 1500);
+    };
+
+    const existingScript = document.querySelector(
+      'script[src="https://js-eu1.hsforms.net/forms/embed/144428117.js"]'
     );
-    container.setAttribute("data-portal-id", "144428117");
 
-    ref.current.appendChild(container);
+    if (existingScript) {
+      // ✅ Script already present → just render
+      renderForm();
+      return;
+    }
 
-    // Let HubSpot render, then hide loader
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+    // ❗ First load (refresh case)
+    const script = document.createElement("script");
+    script.src = "https://js-eu1.hsforms.net/forms/embed/144428117.js";
+    script.defer = true;
 
-    return () => clearTimeout(timer);
+    script.onload = renderForm;
+
+    document.body.appendChild(script);
   }, []);
 
   return (
