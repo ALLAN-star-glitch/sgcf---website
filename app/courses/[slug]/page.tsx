@@ -53,6 +53,8 @@ const cleanExcerpt = (text: string | null | undefined, maxLength: number = 160):
   return cleaned.substring(0, maxLength) + '...';
 };
 
+
+
 // Generate metadata for each course
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -68,29 +70,55 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const websiteUrl = 'https://www.acop.co.ke';
   const courseUrl = `${websiteUrl}/courses/${course.slug}`;
   
-  let ogImageUrl = `${websiteUrl}/acoplogo.jpg`;
+  // Build OG image URL - prioritize featured image, then fallback
+  let ogImageUrl = `${websiteUrl}/acop2026intake.jpg`; // Default fallback
   
   if (course.featuredImage?.node?.sourceUrl) {
-    ogImageUrl = course.featuredImage.node.sourceUrl;
-    if (ogImageUrl.startsWith('/')) {
-      ogImageUrl = `https://cms.acop.co.ke${ogImageUrl}`;
+    let imageUrl = course.featuredImage.node.sourceUrl;
+    
+    // If it's a relative path from WordPress CMS
+    if (imageUrl.startsWith('/')) {
+      imageUrl = `https://cms.acop.co.ke${imageUrl}`;
+    }
+    
+    // Verify it's an absolute URL
+    if (imageUrl.startsWith('http')) {
+      ogImageUrl = imageUrl;
     }
   }
   
   const description = cleanExcerpt(course.excerpt) || cleanExcerpt(course.courseDetails?.careerPathways || '', 160);
+  
+  // Log for debugging (check your server logs)
+  console.log(`OG Image for ${course.slug}: ${ogImageUrl}`);
 
   return {
     title: `${course.title} | Africana College of Professionals`,
     description: description,
     openGraph: {
-      title: course.title,
+      title: `${course.title} | Africana College of Professionals`,
       description: description,
       url: courseUrl,
       siteName: 'Africana College of Professionals',
       type: 'website',
-      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: course.title }],
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: course.title,
+        },
+      ],
     },
-    alternates: { canonical: courseUrl },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${course.title} | Africana College of Professionals`,
+      description: description,
+      images: [ogImageUrl],
+    },
+    alternates: { 
+      canonical: courseUrl,
+    },
   };
 }
 
