@@ -1,5 +1,6 @@
 // app/contact/page.tsx
 import Link from "next/link";
+import { Metadata } from "next";
 import { 
   Mail, Phone, MapPin, Clock, 
   Facebook, Twitter, Linkedin, Instagram, 
@@ -7,9 +8,44 @@ import {
 } from "lucide-react";
 import { ContactForm } from "@/components/ContactForm";
 
-export const metadata = {
-  title: "Contact Us | Africana College of Professionals",
-  description: "Get in touch with Africana College of Professionals. Have questions about our programs? Reach out to us.",
+export const metadata: Metadata = {
+  title: "Contact Us | Get in Touch | Africana College of Professionals",
+  description: "Contact Africana College of Professionals. Have questions about our professional courses? Reach out via phone, email, or visit our campus in Thika, Kenya.",
+  keywords: [
+    "contact Africana College",
+    "Africana College phone number",
+    "Africana College email",
+    "college contact Kenya",
+    "Thika college contact",
+    "Africana College location",
+    "reach Africana College",
+    "college customer service Kenya",
+  ].join(", "),
+  robots: "index, follow",
+  alternates: {
+    canonical: "https://www.acop.co.ke/contact",
+  },
+  openGraph: {
+    title: "Contact Us | Africana College of Professionals",
+    description: "Get in touch with Africana College of Professionals. Call, email, or visit our campus in Thika, Kenya. We're here to help you start your journey.",
+    url: "https://www.acop.co.ke/contact",
+    siteName: "Africana College of Professionals",
+    type: "website",
+    images: [
+      {
+        url: "https://www.acop.co.ke/contact-og.png",
+        width: 1200,
+        height: 630,
+        alt: "Contact Africana College of Professionals - We're here to help",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Us | Africana College of Professionals",
+    description: "Get in touch with us. We're here to answer your questions.",
+    images: ["https://www.acop.co.ke/contact-og.png"],
+  },
 };
 
 export default function ContactPage() {
@@ -28,6 +64,9 @@ export default function ContactPage() {
             </h1>
             <p className="text-lg text-white/90 max-w-2xl mx-auto">
               Have questions about our programs? Reach out to us. We&apos;re here to help you start your journey.
+            </p>
+            <p className="text-sm text-white/70 mt-4">
+              Call, email, or visit us — we&apos;re ready to assist you
             </p>
           </div>
         </div>
@@ -73,6 +112,30 @@ export default function ContactPage() {
                   </a>
                 </p>
                 <p className="text-gray-600">Kyanjau House, 4th Floor, Thika, Kenya</p>
+              </div>
+            </div>
+
+            {/* Business Hours Card */}
+            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="font-bold text-gray-800">Business Hours</h3>
+              </div>
+              <div className="space-y-2 ml-12">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Monday - Friday:</span>
+                  <span className="font-semibold text-gray-800">8:00 AM - 5:00 PM</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Saturday:</span>
+                  <span className="font-semibold text-gray-800">9:00 AM - 1:00 PM</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Sunday:</span>
+                  <span className="font-semibold text-gray-800">Closed</span>
+                </div>
               </div>
             </div>
 
@@ -130,10 +193,10 @@ export default function ContactPage() {
               <p className="text-2xl font-bold text-green-700 mb-2">May 2026 Intake</p>
               <p className="text-sm text-gray-600 mb-3">Applications are now open! Limited seats available.</p>
               <Link 
-                href="/request-info" 
+                href="/get-started" 
                 className="inline-flex items-center gap-2 text-sm font-medium text-green-700 hover:text-green-800 transition-colors"
               >
-                Request Information
+                Get Started
                 <Send className="w-4 h-4" />
               </Link>
             </div>
@@ -217,8 +280,8 @@ export default function ContactPage() {
             Join Africana College of Professionals and take the first step towards a rewarding career
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link href="/request-info" className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Request Information
+            <Link href="/get-started" className="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Get Started
             </Link>
             <Link href="/courses" className="bg-transparent border-2 border-white text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/10 transition-colors">
               Explore Courses
@@ -226,9 +289,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-
-      {/* Floating Contact Button */}
-      <ContactForm />
     </main>
   );
 }
