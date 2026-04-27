@@ -198,9 +198,7 @@ export const MainHeader = ({ hasRecentNews = false }: MainHeaderProps) => {
             {/* Register Button - Always visible on all devices */}
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Link
-                href="https://form.jotform.com/253171134791556"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/request-info"
                 className="inline-flex items-center justify-center px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 bg-primary text-white font-semibold rounded-full hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:scale-105 active:scale-100 group whitespace-nowrap"
                 onClick={() => setMobileMenuOpen(false)}
               >
