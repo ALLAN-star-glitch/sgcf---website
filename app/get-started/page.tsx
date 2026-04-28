@@ -188,7 +188,7 @@ export default async function GetStartedPage() {
           <aside className="lg:w-1/3 space-y-6">
             
             {/* Share Buttons */}
-            <ShareButtons title="Get Started - Africana College of Professionals" />
+            <ShareButtons title="Get Started - Africana College of Professionals" shareText="Share this page" />
 
             {/* Quick Contact Card */}
             <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
