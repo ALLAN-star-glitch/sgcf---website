@@ -74,7 +74,7 @@ function getCourseTypeDisplayName(courseType: string[]): string {
   return displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 }
 
-// Generate metadata
+// Generate metadata with OG image
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const course = await getCourseBySlug(slug);
@@ -101,13 +101,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
   
-  const description = cleanExcerpt(course.excerpt) || cleanExcerpt(course.courseDetails?.careerPathways || '', 160);
+  const description = course.excerpt 
+    ? decodeHtmlEntities(course.excerpt).replace(/<[^>]*>/g, '').substring(0, 160)
+    : course.courseDetails?.careerPathways 
+      ? decodeHtmlEntities(course.courseDetails.careerPathways).replace(/<[^>]*>/g, '').substring(0, 160)
+      : course.title;
 
   return {
     title: `${course.title} | Africana College of Professionals`,
     description: description,
     openGraph: {
-      title: `${course.title} | Africana College of Professionals`,
+      title: course.title,
       description: description,
       url: courseUrl,
       siteName: 'Africana College of Professionals',
@@ -116,7 +120,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${course.title} | Africana College of Professionals`,
+      title: course.title,
       description: description,
       images: [ogImageUrl],
     },
@@ -192,16 +196,8 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
-            
-            {/* Sticky Share Buttons - Left Sidebar for Desktop */}
-            <div className="hidden lg:block lg:w-16 xl:w-20">
-              <div className="sticky top-32">
-                <ShareButtons title={course.title} shareText='Share this page'/>
-              </div>
-            </div>
-            
             {/* Main Content - Left Column */}
-            <article className="lg:flex-1">
+            <article className="lg:w-2/3">
               {/* Featured Image */}
               {featuredImage && (
                 <div className="mb-8">
@@ -269,8 +265,11 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               )}
             </article>
 
-            {/* Right Sidebar */}
+            {/* Right Sidebar - Share buttons at the top like news page */}
             <aside className="lg:w-1/3 space-y-6">
+              {/* Share Buttons - At the top of sidebar like news page */}
+              <ShareButtons title={course.title} shareText="Share this course" />
+
               {/* Video Card */}
               {embedUrl && (
                 <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
@@ -397,13 +396,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               </div>
             </aside>
           </div>
-        </div>
-      </div>
-
-      {/* Mobile Share Buttons - Fixed Bottom */}
-      <div className="lg:hidden fixed bottom-6 left-0 right-0 z-50 flex justify-center">
-        <div className="bg-white/95 backdrop-blur-md rounded-full shadow-lg p-2 border border-gray-200">
-          <ShareButtons title={course.title} shareText='Share this page'/>
         </div>
       </div>
     </main>
