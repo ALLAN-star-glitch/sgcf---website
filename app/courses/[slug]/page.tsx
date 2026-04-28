@@ -192,8 +192,16 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
+            
+            {/* Sticky Share Buttons - Left Sidebar for Desktop */}
+            <div className="hidden lg:block lg:w-16 xl:w-20">
+              <div className="sticky top-32">
+                <ShareButtons title={course.title} shareText='Share this page'/>
+              </div>
+            </div>
+            
             {/* Main Content - Left Column */}
-            <article className="lg:w-2/3">
+            <article className="lg:flex-1">
               {/* Featured Image */}
               {featuredImage && (
                 <div className="mb-8">
@@ -263,9 +271,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
             {/* Right Sidebar */}
             <aside className="lg:w-1/3 space-y-6">
-              {/* Share Buttons - At the top of sidebar like news page */}
-              <ShareButtons title={course.title} />
-
               {/* Video Card */}
               {embedUrl && (
                 <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
@@ -384,10 +389,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
                     <Phone className="w-4 h-4" />
                     <span>+254756234165</span>
                   </Link>
-                  <a href="https://www.acop.co.ke" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-600 hover:text-orange-600 transition-colors">
-                    <Globe className="w-4 h-4" />
-                    <span>www.acop.co.ke</span>
-                  </a>
                   <Link href="/contact" className="flex items-center gap-3 text-gray-600 hover:text-orange-600 transition-colors">
                     <MapPin className="w-4 h-4" />
                     <span>Kyanjau House, Thika, Kenya</span>
@@ -396,6 +397,13 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               </div>
             </aside>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Share Buttons - Fixed Bottom */}
+      <div className="lg:hidden fixed bottom-6 left-0 right-0 z-50 flex justify-center">
+        <div className="bg-white/95 backdrop-blur-md rounded-full shadow-lg p-2 border border-gray-200">
+          <ShareButtons title={course.title} shareText='Share this page'/>
         </div>
       </div>
     </main>

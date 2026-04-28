@@ -6,6 +6,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SidebarFilter } from '@/components/SidebarFilter';
+import { ShareButtons } from '@/components/ShareButtons';
 
 export const revalidate = 60;
 
@@ -121,6 +122,13 @@ export default async function CoursesPage() {
               </div>
             </div>
           </section>
+          
+          {/* Share Buttons - Just below hero */}
+          <div className="container mx-auto px-4 py-6">
+            <div className="flex justify-center">
+              <ShareButtons title="Professional Courses at Africana College" shareText='Share this page'/>
+            </div>
+          </div>
           
           {/* Two Column Layout */}
           <div className="container mx-auto px-4 py-12">

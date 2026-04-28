@@ -213,13 +213,13 @@ const DesktopSidebar = ({
 
 // Mobile Filter Button - LEFT SIDE
 const MobileFilterButton = ({ onOpen }: { onOpen: () => void }) => (
-  <div className="lg:hidden fixed bottom-6 left-6 z-40">
+  <div className="lg:hidden fixed bottom-24 left-6 z-40">
     <button
       onClick={onOpen}
       className="bg-orange-600 hover:bg-orange-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 flex items-center gap-2"
     >
       <SlidersHorizontal className="w-5 h-5" />
-      <span className="text-sm font-medium">Filter</span>
+      <span className="text-sm font-medium">Filter Courses</span>
     </button>
   </div>
 );

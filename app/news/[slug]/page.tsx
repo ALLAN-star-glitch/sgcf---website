@@ -306,7 +306,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
             {/* Right Sidebar - Using Brand Colors */}
             <aside className="lg:w-1/3 space-y-6">
-              <ShareButtons title={article.title} />
+              <ShareButtons title={article.title} shareText="Share this article" />
 
               {/* Attachment Card */}
               {metadata?.attachment?.node?.mediaItemUrl && (

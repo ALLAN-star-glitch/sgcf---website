@@ -5,9 +5,10 @@ import { Bookmark } from 'lucide-react'
 
 interface ShareButtonsProps {
   title: string
+  shareText: string
 }
 
-export function ShareButtons({ title }: ShareButtonsProps) {
+export function ShareButtons({ title, shareText }: ShareButtonsProps) {
   // Helper function to get current URL
   const getCurrentUrl = () => {
     if (typeof window !== 'undefined') {
@@ -139,7 +140,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
       <div className="hidden lg:block mt-8 pt-6 border-t border-gray-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 font-medium">Share this article:</span>
+            <span className="text-sm text-gray-500 font-medium">{shareText}:</span>
             <div className="flex gap-2">
               <button
                 onClick={shareOnFacebook}
