@@ -123,7 +123,7 @@ export interface CourseDetails {
   careerPathways: string | null;
   entryRequirements: string | null;
   syllabus: string | null;
-  videoUrl: string | null;  // ← Add this
+  videoUrl: string | null;
 }
 
 export interface Course {
@@ -144,6 +144,10 @@ export interface Course {
 
 interface AllCoursesResponse {
   courses: {
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string;
+    };
     nodes: Course[];
   };
 }
@@ -461,18 +465,21 @@ export async function getAllTags(): Promise<NewsTag[]> {
   return Array.from(tagsMap.entries()).map(([slug, name]) => ({ name, slug }));
 }
 
-/// ============================================
-// Course Functions (New)
+// ============================================
+// Course Functions (Updated with Pagination)
 // ============================================
 
-// lib/wordpress.ts
-
+// Get all courses with pagination support
 export async function getAllCourses(): Promise<Course[]> {
   let allCourses: Course[] = [];
   let hasNextPage = true;
   let after = '';
+  let pageCount = 0;
   
   while (hasNextPage) {
+    pageCount++;
+    console.log(`Fetching courses page ${pageCount}...`);
+    
     const data = await fetchAPI<AllCoursesResponse>(`
       query GetAllCourses($first: Int = 100, $after: String = "") {
         courses(first: $first, after: $after) {
@@ -528,36 +535,40 @@ export async function getAllCourses(): Promise<Course[]> {
     `, { variables: { first: 100, after } });
     
     const page = data?.courses;
-    if (page?.nodes) {
+    
+    if (page?.nodes && page.nodes.length > 0) {
       allCourses = [...allCourses, ...page.nodes];
+      console.log(`Page ${pageCount}: Retrieved ${page.nodes.length} courses. Total so far: ${allCourses.length}`);
     }
     
     hasNextPage = page?.pageInfo?.hasNextPage || false;
     after = page?.pageInfo?.endCursor || '';
     
     // Safety break to prevent infinite loops
-    if (allCourses.length > 1000) break;
+    if (pageCount > 50 || allCourses.length > 1000) {
+      console.warn('Breaking pagination loop - safety limit reached');
+      break;
+    }
   }
   
-  console.log(`Total courses fetched: ${allCourses.length}`);
+  console.log(`✅ Total courses fetched: ${allCourses.length}`);
   
   // Sort courses to prioritize Counseling Psychology courses
   return prioritizeCounselingPsychologyCourses(allCourses);
 }
 
-
 // Helper function to prioritize specific courses
 function prioritizeCounselingPsychologyCourses(courses: Course[]): Course[] {
-  // Debug: Log all course titles to see what you're getting
-  console.log('All course titles from WordPress:');
+  // Debug: Log all course titles
+  console.log('📚 All course titles from WordPress:');
   courses.forEach(course => {
-    console.log(`- "${course.title}"`);
+    console.log(`  - "${course.title}" (${course.courseDetails?.courseType?.[0] || 'no type'})`);
   });
   
-  // Define the priority titles with more flexible matching
+  // Define priority keywords for counselling/psychology
   const priorityKeywords = [
     'counseling psychology',
-    'counselling psychology'  // British spelling variant
+    'counselling psychology'
   ];
   
   // Separate courses into priority and non-priority
@@ -571,7 +582,7 @@ function prioritizeCounselingPsychologyCourses(courses: Course[]): Course[] {
     );
     
     if (isPriority) {
-      console.log(`✓ Found priority course: "${course.title}"`);
+      console.log(`🎯 Found priority course: "${course.title}"`);
       priorityCourses.push(course);
     } else {
       otherCourses.push(course);
@@ -580,23 +591,36 @@ function prioritizeCounselingPsychologyCourses(courses: Course[]): Course[] {
   
   // Sort priority courses: Diploma first, then Certificate
   priorityCourses.sort((a, b) => {
-    const aTitle = a.title.toLowerCase();
-    const bTitle = b.title.toLowerCase();
+    const aType = a.courseDetails?.courseType?.[0] || '';
+    const bType = b.courseDetails?.courseType?.[0] || '';
     
-    const aIsDiploma = aTitle.includes('diploma');
-    const bIsDiploma = bTitle.includes('diploma');
-    const aIsCertificate = aTitle.includes('certificate');
-    const bIsCertificate = bTitle.includes('certificate');
+    // Define order: diploma (1), certificate (2), short-course (3)
+    const getTypePriority = (type: string) => {
+      if (type === 'diploma') return 1;
+      if (type === 'certificate') return 2;
+      if (type === 'short-course') return 3;
+      return 4;
+    };
     
-    if (aIsDiploma && !bIsDiploma) return -1;
-    if (!aIsDiploma && bIsDiploma) return 1;
-    if (aIsCertificate && !bIsCertificate) return -1;
-    if (!aIsCertificate && bIsCertificate) return 1;
-    return 0;
+    const aPriority = getTypePriority(aType);
+    const bPriority = getTypePriority(bType);
+    
+    if (aPriority !== bPriority) {
+      return aPriority - bPriority;
+    }
+    
+    // If same type, sort by date (newest first)
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
   
-  console.log(`Priority courses found: ${priorityCourses.length}`);
-  console.log(`Other courses: ${otherCourses.length}`);
+  console.log(`📊 Priority courses found: ${priorityCourses.length}`);
+  if (priorityCourses.length > 0) {
+    console.log('Priority course order:');
+    priorityCourses.forEach((course, idx) => {
+      console.log(`  ${idx + 1}. ${course.title} (${course.courseDetails?.courseType?.[0]})`);
+    });
+  }
+  console.log(`📊 Other courses: ${otherCourses.length}`);
   
   // Return priority courses first, then the rest
   return [...priorityCourses, ...otherCourses];
