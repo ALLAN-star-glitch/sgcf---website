@@ -59,7 +59,6 @@ export default function RootLayout({
         <main>{children}</main>
         <Footer />
 
-        {/* Poptin Pixel */}
         <Script
           id="poptin-pixel"
           src="https://cdn.popt.in/pixel.js?id=fb66af3503d63"
@@ -67,7 +66,6 @@ export default function RootLayout({
           async={true}
         />
 
-        {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-DGCXCNRGHE"
           strategy="afterInteractive"
@@ -82,7 +80,6 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Tawk.to Chat */}
         <Script id="tawk-to" strategy="afterInteractive">
           {`
             var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
@@ -96,15 +93,6 @@ export default function RootLayout({
             })();
           `}
         </Script>
-
-        {/* HubSpot Chat Widget */}
-        <Script
-          id="hs-script-loader"
-          src="//js-eu1.hs-scripts.com/144428117.js"
-          strategy="afterInteractive"
-          async
-          defer
-        />
       </body>
     </html>
   );
