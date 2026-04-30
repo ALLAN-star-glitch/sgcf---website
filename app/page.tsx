@@ -6,6 +6,9 @@ import { FeaturesSection } from '@/components/home-page/FeaturesSection'
 import { CoursesSectionWrapper } from '@/components/home-page/CoursesSectionWrapper'  // ← Updated import
 import { TestimonialsSection } from '@/components/home-page/TestmonialSection'
 import { getAllNews } from '@/lib/wordpress'
+import { HeroSection } from '@/components/home-page/HeroSection'
+import { ServicesSection } from '@/components/home-page/ServicesSection'
+import { ProgramsSection } from '@/components/home-page/ProgramsSection'
 
 export const metadata: Metadata = {
   title: 'Africana College of Professionals | Professional Courses in Kenya',
@@ -76,12 +79,9 @@ export default async function Home() {
       />
 
       <div>
-        <HeroSlider />
-        <NewsSection newsArticles={latestNews} />
-        <AboutSection />
-        <FeaturesSection />
-        <CoursesSectionWrapper /> 
-        <TestimonialsSection />
+        <HeroSection/>
+        <ServicesSection/>
+        <ProgramsSection/>
       </div>
     </>
   );

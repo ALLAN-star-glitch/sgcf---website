@@ -36,7 +36,9 @@ const nextConfig: NextConfig = {
         pathname: '/avatar/**',
       },
     ],
+     domains: ['cms.acop.co.ke'],
   },
+  
 };
 
 export default nextConfig;

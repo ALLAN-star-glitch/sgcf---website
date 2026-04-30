@@ -94,6 +94,7 @@ export default async function CoursesPage() {
                 alt="Africana College Courses"
                 fill
                 priority
+                unoptimized
                 className="object-cover object-top scale-105 transition-transform duration-700 group-hover:scale-100"
               />
               {/* Gradient Overlay */}

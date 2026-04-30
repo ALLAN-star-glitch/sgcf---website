@@ -112,8 +112,15 @@ export default async function GetStartedPage() {
         </div>
       </section>
 
+      {/* Share Buttons - Just below hero (consistent with other pages) */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex justify-center">
+          <ShareButtons title="Get Started - Africana College of Professionals" shareText="Share this page" />
+        </div>
+      </div>
+
       {/* Main Content - Two Column Layout */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* Left Column - Form with May Intake Banner */}
@@ -184,12 +191,9 @@ export default async function GetStartedPage() {
             </div>
           </div>
 
-          {/* Right Column - Dynamic Sidebar from WordPress */}
+          {/* Right Column - Dynamic Sidebar from WordPress (NO ShareButtons here anymore) */}
           <aside className="lg:w-1/3 space-y-6">
             
-            {/* Share Buttons */}
-            <ShareButtons title="Get Started - Africana College of Professionals" shareText="Share this page" />
-
             {/* Quick Contact Card */}
             <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
               <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">

@@ -723,3 +723,17 @@ export async function getCoursesByType(courseType: string): Promise<Course[]> {
     course.courseDetails?.courseType?.includes(courseType)
   );
 }
+
+export function getLocalImageUrl(url: string): string {
+  if (!url) return '';
+  // Convert absolute WordPress URL to relative for proxying
+  return url.replace('https://cms.acop.co.ke', '');
+}
+
+// Helper function to safely get image URL
+export function getSafeImageUrl(course: Course): string {
+  if (course.featuredImage?.node?.sourceUrl) {
+    return getLocalImageUrl(course.featuredImage.node.sourceUrl);
+  }
+  return '/placeholder-course.jpg'; // Default placeholder image
+}
