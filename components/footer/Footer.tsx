@@ -1,211 +1,252 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  LinkedinIcon,
-  MapPinIcon,
-  PhoneIcon,
-  MailIcon,
-} from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { 
+  Heart, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+  ArrowRight,
+  ChevronRight
+} from 'lucide-react';
 
 export const Footer = () => {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const currentYear = new Date().getFullYear();
 
-  const handleOpen = () => {
-    setLoading(true);
-    setOpen(true);
-  };
+  const quickLinks = [
+    { name: "Home", href: "/" },
+    { name: "About Us", href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Contact", href: "/contact" },
+  ];
 
-  useEffect(() => {
-    if (!open) return;
+  const resources = [
+    { name: "Book Appointment", href: "/book-appointment" },
+    { name: "Donate", href: "/donate" },
+    { name: "Crisis Support", href: "/crisis-support" },
+    { name: "FAQ", href: "/faq" },
+  ];
 
-    const script = document.createElement("script");
-    script.src = "https://js-eu1.hsforms.net/forms/embed/144428117.js";
-    script.async = true;
-    script.defer = true;
+  const services = [
+    { name: "Individual Therapy", href: "/services/individual-therapy" },
+    { name: "Couples Counseling", href: "/services/couples-counseling" },
+    { name: "Trauma Recovery", href: "/services/trauma-recovery" },
+    { name: "Online Counseling", href: "/services/online-counseling" },
+  ];
 
-    script.onload = () => {
-      const check = setInterval(() => {
-        const iframe = document.querySelector(".hs-form-frame iframe");
-        if (iframe) {
-          setLoading(false);
-          clearInterval(check);
-        }
-      }, 200);
-    };
-
-    document.body.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
-  }, [open]);
+  const socialLinks = [
+    { icon: Facebook, href: "https://facebook.com", color: "#1877F2" },
+    { icon: Instagram, href: "https://instagram.com", color: "#E4405F" },
+    { icon: Twitter, href: "https://twitter.com", color: "#1DA1F2" },
+    { icon: Linkedin, href: "https://linkedin.com", color: "#0A66C2" },
+  ];
 
   return (
-    <>
-      {/* ================= FOOTER ================= */}
-      <footer className="bg-primary text-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            
-            {/* Brand */}
-            <div>
-              <h3 className="font-playfair text-xl font-bold mb-4">
-                Africana College
-              </h3>
-              <p className="text-white/80 mb-4">
-                Transforming lives through faith-based education and professional excellence.
-              </p>
-              <div className="flex space-x-4">
-                <a href="#" className="text-white hover:text-accent">
-                  <FacebookIcon size={20} />
-                </a>
-                <a href="#" className="text-white hover:text-accent">
-                  <InstagramIcon size={20} />
-                </a>
-                <a href="#" className="text-white hover:text-accent">
-                  <LinkedinIcon size={20} />
-                </a>
-              </div>
-            </div>
+    <footer className="relative bg-white pt-16 pb-8 overflow-hidden">
+      {/* Decorative Top Border */}
+      <div 
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent), var(--color-highlight))' }}
+      />
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-playfair text-xl font-bold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li><Link href="/" className="text-white/80 hover:text-accent">Home</Link></li>
-                <li><Link href="/courses" className="text-white/80 hover:text-accent">Courses</Link></li>
-                <li><Link href="/admissions" className="text-white/80 hover:text-accent">Admissions</Link></li>
-                <li>
-                  <Link
-                    href="https://form.jotform.com/253172041859559"
-                    target="_blank"
-                    className="text-white/80 hover:text-accent"
-                  >
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <a href="#" className="text-white/80 hover:text-accent">Student Portal</a>
-                </li>
-                <li>
-                  <Link
-                    href="https://cms.acop.co.ke/acopcmsportalcollege"
-                    target="_blank"
-                    className="text-white/80 hover:text-accent"
-                  >
-                    CMS Portal
-                  </Link>
-                </li>
-                {/* ACOP CRM - New Menu Item */}
-                <li>
+      {/* Background Decoration */}
+      <div 
+        className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl -z-10"
+        style={{ background: 'var(--color-primary)', opacity: 0.03 }}
+      />
+      <div 
+        className="absolute top-20 left-0 w-80 h-80 rounded-full blur-3xl -z-10"
+        style={{ background: 'var(--color-secondary)', opacity: 0.03 }}
+      />
+
+      <div className="container-counseling mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          
+          {/* Column 1 - Brand & Tagline */}
+          <div>
+            <Link href="/" className="flex items-center space-x-2 mb-4">
+              <div className="w-10 h-10 relative rounded-full overflow-hidden">
+                <Image
+                  src="/sgcf-logo.png"
+                  alt="Susan Gitau Counseling Foundation"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="font-bold text-lg" style={{ color: 'var(--foreground)' }}>
+                Susan Gitau
+              </span>
+            </Link>
+            <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+              Healing minds, restoring hope through compassionate, professional counseling services.
+            </p>
+            <div className="flex space-x-3">
+              {socialLinks.map((social, idx) => {
+                const Icon = social.icon;
+                return (
                   <a
-                    href="https://app-eu1.hubspot.com/"
+                    key={idx}
+                    href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-white/80 hover:text-accent flex items-center gap-2"
+                    className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    style={{ background: `${social.color}10` }}
                   >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
-                    </svg>
-                    ACOP CRM
+                    <Icon size={16} style={{ color: social.color }} />
                   </a>
-                </li>
-              </ul>
+                );
+              })}
             </div>
+          </div>
 
-            {/* Contact */}
-            <div>
-              <h3 className="font-playfair text-xl font-bold mb-4">Contact Info</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <MapPinIcon size={18} className="mr-2 mt-1" />
-                  <span className="text-white/80">Kianjau House 4th Floor, Thika</span>
+          {/* Column 2 - Quick Links */}
+          <div>
+            <h3 className="font-bold text-lg mb-4" style={{ color: 'var(--foreground)' }}>
+              Quick Links
+            </h3>
+            <ul className="space-y-2">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="flex items-center gap-1 text-sm transition-all hover:gap-2"
+                    style={{ color: 'var(--foreground)', opacity: 0.7 }}
+                  >
+                    <ChevronRight size={12} style={{ color: 'var(--color-primary)' }} />
+                    {link.name}
+                  </Link>
                 </li>
-                <li className="flex items-center">
-                  <PhoneIcon size={18} className="mr-2" />
-                  <a href="tel:+254756234165" className="text-white/80 hover:text-accent">
-                    +254 756 234165
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3 - Services */}
+          <div>
+            <h3 className="font-bold text-lg mb-4" style={{ color: 'var(--foreground)' }}>
+              Our Services
+            </h3>
+            <ul className="space-y-2">
+              {services.map((service) => (
+                <li key={service.name}>
+                  <Link
+                    href={service.href}
+                    className="flex items-center gap-1 text-sm transition-all hover:gap-2"
+                    style={{ color: 'var(--foreground)', opacity: 0.7 }}
+                  >
+                    <ChevronRight size={12} style={{ color: 'var(--color-primary)' }} />
+                    {service.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4 - Contact & Hours */}
+          <div>
+            <h3 className="font-bold text-lg mb-4" style={{ color: 'var(--foreground)' }}>
+              Get in Touch
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <Phone size={16} style={{ color: 'var(--color-primary)' }} className="mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Crisis Helpline (24/7)</p>
+                  <a href="tel:+254700000000" className="text-sm font-semibold" style={{ color: 'var(--color-highlight)' }}>
+                    +254 700 000 000
                   </a>
-                </li>
-                <li className="flex items-center">
-                  <MailIcon size={18} className="mr-2" />
-                  <a href="mailto:info@acop.co.ke" className="text-white/80 hover:text-accent">
-                    info@acop.co.ke
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <Mail size={16} style={{ color: 'var(--color-primary)' }} className="mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Email</p>
+                  <a href="mailto:hello@sgcfoundation.org" className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                    hello@sgcfoundation.org
                   </a>
-                </li>
-              </ul>
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin size={16} style={{ color: 'var(--color-primary)' }} className="mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Location</p>
+                  <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                    Karen Medical Centre, Suite 204<br />
+                    Nairobi, Kenya
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <Clock size={16} style={{ color: 'var(--color-primary)' }} className="mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Office Hours</p>
+                  <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                    Mon-Fri: 9 AM - 7 PM<br />
+                    Sat: 10 AM - 4 PM
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="mt-12 pt-8 border-t" style={{ borderColor: `${'var(--color-primary)'}20` }}>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Heart size={18} style={{ color: 'var(--color-primary)' }} />
+              <span className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                Subscribe to our newsletter for mental health tips and updates
+              </span>
             </div>
-
-            {/* Newsletter */}
-            <div>
-              <h3 className="font-playfair text-xl font-bold mb-4">Newsletter</h3>
-              <p className="text-white/80 mb-4">
-                Subscribe to receive updates on new courses and events.
-              </p>
+            <div className="flex w-full sm:w-auto">
+              <input
+                type="email"
+                placeholder="Your email address"
+                className="flex-1 sm:w-64 px-4 py-2 rounded-l-full border focus:outline-none focus:ring-2"
+                style={{ 
+                  borderColor: `${'var(--color-primary)'}30`,
+                  background: 'white'
+                }}
+              />
               <button
-                onClick={handleOpen}
-                className="bg-accent hover:bg-accent/90 text-white px-6 py-2 rounded-full font-medium w-full cursor-pointer"
+                className="px-4 py-2 rounded-r-full text-white transition-all duration-300 hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)' }}
               >
                 Subscribe
               </button>
             </div>
           </div>
-
-          <div className="border-t border-white/20 mt-12 pt-6 text-center text-white/70 text-sm">
-            © 2025 Africana College of Professionals – Educating in Truth and Light.
-          </div> 
         </div>
-      </footer>
 
-      {/* ================= MODAL ================= */}
-      {open && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-auto">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative overflow-y-auto max-h-[90vh]">
-            
-            {/* Close Button */}
-            <button
-              onClick={() => setOpen(false)}
-              className="cursor-pointer absolute top-2 right-2 w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
-              aria-label="Close"
-            >
-              ✕
-            </button>
-
-            {/* Modal Image */}
-            <div className="w-full h-40 relative mb-4 rounded-lg overflow-hidden shadow-md">
-              <Image
-                src="/newsletter.jpg"
-                alt="Newsletter"
-                fill
-                className="object-cover"
-              />
+        {/* Bottom Bar */}
+        <div className="mt-8 pt-6 border-t text-center" style={{ borderColor: `${'var(--color-primary)'}20` }}>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+            <p style={{ color: 'var(--foreground)', opacity: 0.6 }}>
+              © {currentYear} Susan Gitau Counseling Foundation. All rights reserved.
+            </p>
+            <div className="flex gap-4">
+              <Link href="/privacy-policy" className="hover:underline" style={{ color: 'var(--foreground)', opacity: 0.6 }}>
+                Privacy Policy
+              </Link>
+              <Link href="/terms-of-service" className="hover:underline" style={{ color: 'var(--foreground)', opacity: 0.6 }}>
+                Terms of Service
+              </Link>
+              <Link href="/sitemap" className="hover:underline" style={{ color: 'var(--foreground)', opacity: 0.6 }}>
+                Sitemap
+              </Link>
             </div>
-
-            {/* Loading Spinner */}
-            {loading && (
-              <div className="flex justify-center items-center py-10">
-                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-
-            {/* HubSpot Form */}
-            <div
-              className={`hs-form-frame transition-all duration-300 ${
-                loading ? "opacity-0" : "opacity-100"
-              }`}
-              data-region="eu1"
-              data-form-id="0eb22cc9-fe0e-47ea-b629-64b41b9db2b2"
-              data-portal-id="144428117"
-            ></div>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </footer>
   );
 };

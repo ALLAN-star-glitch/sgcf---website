@@ -1,31 +1,19 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   ArrowRight, 
-  GraduationCap, 
-  Briefcase, 
-  Users, 
-  Heart,
+  Heart, 
   Star,
   School,
   Building2,
   Handshake
 } from 'lucide-react';
-import { motion, useInView } from 'framer-motion';
 
 export const ProgramsSection = () => {
-  const [isMounted, setIsMounted] = useState(false);
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) return null;
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
   const programs = [
     {
@@ -42,8 +30,12 @@ export const ProgramsSection = () => {
         "Parent education seminars",
         "Crisis response training"
       ],
-      color: "primary",
-      href: "/programs/schools-outreach"
+      color: "#2D6A4F",
+      lightColor: "#40916C",
+      bgLight: "rgba(45, 106, 79, 0.1)",
+      href: "/programs/schools-outreach",
+      image: "/programs/schools-outreach.png",
+      imageAlt: "Students participating in mental health awareness workshop"
     },
     {
       id: 2,
@@ -59,8 +51,12 @@ export const ProgramsSection = () => {
         "Stress management workshops",
         "Mental health first aid"
       ],
-      color: "secondary",
-      href: "/programs/workplace-wellness"
+      color: "#6D28D9",
+      lightColor: "#8B5CF6",
+      bgLight: "rgba(109, 40, 217, 0.1)",
+      href: "/programs/workplace-wellness",
+      image: "/programs/workplace-wellness.png",
+      imageAlt: "Corporate employees participating in mental wellness training"
     },
     {
       id: 3,
@@ -76,95 +72,82 @@ export const ProgramsSection = () => {
         "Caregiver support network",
         "Life transitions group"
       ],
-      color: "accent",
-      href: "/programs/support-groups"
+      color: "#FBBF24",
+      lightColor: "#FCD34D",
+      bgLight: "rgba(251, 191, 36, 0.15)",
+      href: "/programs/support-groups",
+      image: "/programs/support-groups.png",
+      imageAlt: "Support group participants sharing in a safe environment"
     }
   ];
 
-  const getColorStyles = (color: string) => {
-    switch(color) {
-      case 'primary': 
-        return { 
-          bg: 'var(--color-primary)', 
-          light: 'var(--color-primary-light)', 
-          dark: 'var(--color-primary-dark)',
-          bgLight: 'rgba(45, 106, 79, 0.1)'
-        };
-      case 'secondary': 
-        return { 
-          bg: 'var(--color-secondary)', 
-          light: 'var(--color-secondary-light)', 
-          dark: '#5B21B6',
-          bgLight: 'rgba(109, 40, 217, 0.1)'
-        };
-      case 'accent': 
-        return { 
-          bg: 'var(--color-accent)', 
-          light: '#FCD34D', 
-          dark: 'var(--color-accent-dark)',
-          bgLight: 'rgba(251, 191, 36, 0.1)'
-        };
-      default: 
-        return { 
-          bg: 'var(--color-primary)', 
-          light: 'var(--color-primary-light)', 
-          dark: 'var(--color-primary-dark)',
-          bgLight: 'rgba(45, 106, 79, 0.1)'
-        };
-    }
+  const handleImageError = (id: number) => {
+    setImageErrors(prev => ({ ...prev, [id]: true }));
   };
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-28 relative" style={{ background: 'var(--color-lavender)' }}>
-      <div className="container-counseling relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 md:py-28" style={{ background: '#F8F6FF' }}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-12"
-        >
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: 'white' }}>
-            <Heart size={14} style={{ color: 'var(--color-primary)' }} />
-            <span className="text-sm font-medium" style={{ color: 'var(--color-primary-dark)' }}>
+            <Heart size={14} style={{ color: '#2D6A4F' }} />
+            <span className="text-sm font-medium" style={{ color: '#1B4332' }}>
               Community Impact
             </span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-serif mb-4" style={{ color: 'var(--foreground)' }}>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-serif mb-4" style={{ color: '#171717' }}>
             Our{' '}
-            <span className="text-gradient-primary">Programs</span>
+            <span style={{ background: 'linear-gradient(135deg, #2D6A4F 0%, #6D28D9 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent' }}>
+              Programs
+            </span>
           </h2>
-          <p className="text-lg sm:text-xl" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+          <p className="text-lg sm:text-xl" style={{ color: '#171717', opacity: 0.7 }}>
             Extending mental health support beyond the counseling room
           </p>
-        </motion.div>
+        </div>
 
         {/* Program Cards Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {programs.map((program, idx) => {
+          {programs.map((program) => {
             const IconComponent = program.icon;
-            const colors = getColorStyles(program.color);
+            const hasImageError = imageErrors[program.id];
             
             return (
-              <motion.div
+              <div
                 key={program.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
                 className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
               >
-                {/* Colored Header Bar with Icon */}
-                <div 
-                  className="relative h-32 flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${colors.bg} 0%, ${colors.dark} 100%)` }}
-                >
-                  <IconComponent size={64} className="text-white opacity-90" strokeWidth={1.5} />
+                {/* Image Section with Fallback */}
+                <div className="relative h-56 overflow-hidden">
+                  {!hasImageError ? (
+                    <>
+                      <Image
+                        src={program.image}
+                        alt={program.imageAlt}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        onError={() => handleImageError(program.id)}
+                        priority={program.id === 1}
+                      />
+                      {/* Dark overlay for better text contrast */}
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300" />
+                    </>
+                  ) : (
+                    /* Fallback - Colored Header Bar with Icon when image fails to load */
+                    <div 
+                      className="w-full h-full flex items-center justify-center"
+                      style={{ background: `linear-gradient(135deg, ${program.color} 0%, ${program.color}CC 100%)` }}
+                    >
+                      <IconComponent size={56} className="text-white opacity-90" strokeWidth={1.5} />
+                    </div>
+                  )}
                   
                   {/* Impact Badge */}
-                  <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-2 shadow-md">
-                    <Star size={12} style={{ color: colors.bg }} />
-                    <span className="text-xs font-semibold" style={{ color: colors.dark }}>
+                  <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-2 shadow-md z-10">
+                    <Star size={12} style={{ color: program.color }} />
+                    <span className="text-xs font-semibold" style={{ color: program.color }}>
                       {program.impactStat}
                     </span>
                   </div>
@@ -172,24 +155,24 @@ export const ProgramsSection = () => {
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
+                  <h3 className="text-xl font-bold mb-1" style={{ color: '#171717' }}>
                     {program.title}
                   </h3>
-                  <p className="text-sm mb-3" style={{ color: colors.bg, opacity: 0.8 }}>
+                  <p className="text-sm mb-3" style={{ color: program.color, opacity: 0.8 }}>
                     {program.tagline}
                   </p>
 
-                  <p className="mb-4 leading-relaxed text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                  <p className="mb-4 leading-relaxed text-sm" style={{ color: '#171717', opacity: 0.7 }}>
                     {program.description}
                   </p>
 
                   {/* Features List */}
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {program.features.slice(0, 3).map((feature, fIdx) => (
+                    {program.features.map((feature, fIdx) => (
                       <span 
                         key={fIdx}
                         className="text-xs px-2 py-1 rounded-full"
-                        style={{ background: colors.bgLight, color: colors.bg }}
+                        style={{ background: program.bgLight, color: program.color }}
                       >
                         {feature}
                       </span>
@@ -199,12 +182,12 @@ export const ProgramsSection = () => {
                   {/* Impact Detail */}
                   <div 
                     className="mb-4 p-3 rounded-xl"
-                    style={{ background: colors.bgLight }}
+                    style={{ background: program.bgLight }}
                   >
-                    <p className="text-xs font-semibold mb-1" style={{ color: colors.bg }}>
+                    <p className="text-xs font-semibold mb-1" style={{ color: program.color }}>
                       Impact Highlight
                     </p>
-                    <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                    <p className="text-sm" style={{ color: '#171717', opacity: 0.7 }}>
                       {program.impactDetail}
                     </p>
                   </div>
@@ -213,36 +196,31 @@ export const ProgramsSection = () => {
                   <Link
                     href={program.href}
                     className="inline-flex items-center gap-2 text-sm font-medium transition-all duration-300 hover:gap-3"
-                    style={{ color: colors.bg }}
+                    style={{ color: program.color }}
                   >
                     <span>Learn more about this program</span>
                     <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-center mt-12"
-        >
+        <div className="text-center mt-12">
           <Link
             href="/programs"
             className="group inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-105"
             style={{ 
-              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
+              background: 'linear-gradient(135deg, #2D6A4F 0%, #1B4332 100%)',
             }}
           >
             <Heart size={18} />
             <span>Support Our Programs</span>
             <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

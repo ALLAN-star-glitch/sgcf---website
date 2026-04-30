@@ -1,265 +1,276 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { 
   Calendar, 
   Clock, 
   MapPin, 
-  DollarSign, 
   ArrowRight, 
   Megaphone,
   ChevronRight,
-  Tag,
+  ChevronLeft,
   Star,
-  Users,
   Heart,
-  Shield,
   MessageCircle
 } from 'lucide-react';
-import { motion, useInView } from 'framer-motion';
+
+// Move data outside the component
+const announcements = [
+  { id: 1, text: "New: Online Counseling Now Available Across Kenya", link: "/services/online-counseling" },
+  { id: 2, text: "Mental Health Awareness Month - Free Webinar April 25th", link: "/events/mental-health-webinar" },
+  { id: 3, text: "Sliding Scale Fees Available - No One Turned Away", link: "/fees" },
+  { id: 4, text: "New Resource: 'Managing Anxiety at Work' Guide Available", link: "/resources/anxiety-guide" },
+  { id: 5, text: "Join Our Community Support Groups - Starting May 5th", link: "/programs/support-groups" },
+];
+
+const eventsData = [
+  {
+    id: 1,
+    title: "Mental Health Awareness Webinar",
+    month: "APR",
+    day: "25",
+    time: "6:00 PM EAT",
+    location: "Zoom (Virtual)",
+    price: "FREE",
+    isFree: true,
+    isNew: false,
+    href: "/events/mental-health-webinar",
+  },
+  {
+    id: 2,
+    title: "Couples Communication Workshop",
+    month: "MAY",
+    day: "10",
+    time: "10:00 AM EAT",
+    location: "Nairobi (In-person)",
+    price: "KES 2,500",
+    isFree: false,
+    isNew: false,
+    href: "/events/couples-workshop",
+  },
+  {
+    id: 3,
+    title: "Youth Anxiety Support Group",
+    month: "WEEKLY",
+    day: "WED",
+    time: "4:00 PM EAT",
+    location: "Virtual",
+    price: "FREE",
+    isFree: true,
+    isNew: true,
+    href: "/events/youth-anxiety-group",
+  },
+];
+
+const blogPostsData = [
+  {
+    id: 1,
+    title: "5 Signs You Might Benefit from Therapy",
+    excerpt: "Recognizing when to seek help is a sign of strength, not weakness. Here are five signs that therapy could be beneficial for you.",
+    date: "April 10, 2026",
+    category: "Mental Health",
+    readTime: "5 min read",
+    href: "/blog/signs-you-need-therapy",
+  },
+  {
+    id: 2,
+    title: "New Online Counseling Sessions Now Available",
+    excerpt: "Access professional counseling from the comfort of your home. Learn how our virtual sessions work and how to get started.",
+    date: "April 5, 2026",
+    category: "Announcement",
+    readTime: "3 min read",
+    href: "/blog/online-counseling",
+  },
+  {
+    id: 3,
+    title: "World Mental Health Day Event Recap",
+    excerpt: "Highlights from our community outreach event, including key takeaways and resources shared with attendees.",
+    date: "March 28, 2026",
+    category: "Community",
+    readTime: "4 min read",
+    href: "/blog/wmhd-recap",
+  },
+];
 
 export const EventsUpdatesSection = () => {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const [isClient, setIsClient] = useState(false);
+  const [currentAnnouncementIndex, setCurrentAnnouncementIndex] = useState(0);
+  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
+    setIsClient(true);
   }, []);
 
-  if (!isMounted) return null;
+  // Auto-rotate announcements every 5 seconds with fade effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // eslint-disable-next-line react-hooks/immutability
+      nextAnnouncement();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [currentAnnouncementIndex]);
 
-  // Scrolling announcements data
-  const announcements = [
-    { id: 1, text: "📢 New: Online Counseling Now Available Across Kenya", link: "/services/online-counseling" },
-    { id: 2, text: "🎗️ Mental Health Awareness Month - Free Webinar April 25th", link: "/events/mental-health-webinar" },
-    { id: 3, text: "💚 Sliding Scale Fees Available - No One Turned Away", link: "/fees" },
-    { id: 4, text: "📚 New Resource: 'Managing Anxiety at Work' Guide Available", link: "/resources/anxiety-guide" },
-    { id: 5, text: "🌟 Join Our Community Support Groups - Starting May 5th", link: "/programs/support-groups" },
-  ];
-
-  // Events data
-  const events = [
-    {
-      id: 1,
-      title: "Mental Health Awareness Webinar",
-      date: "2026-04-25",
-      month: "APR",
-      day: "25",
-      time: "6:00 PM EAT",
-      location: "Zoom (Virtual)",
-      price: "FREE",
-      isFree: true,
-      isNew: false,
-      category: "Webinar",
-      href: "/events/mental-health-webinar",
-    },
-    {
-      id: 2,
-      title: "Couples Communication Workshop",
-      date: "2026-05-10",
-      month: "MAY",
-      day: "10",
-      time: "10:00 AM EAT",
-      location: "Nairobi (In-person)",
-      price: "KES 2,500",
-      isFree: false,
-      isNew: false,
-      category: "Workshop",
-      href: "/events/couples-workshop",
-    },
-    {
-      id: 3,
-      title: "Youth Anxiety Support Group",
-      date: "2026-05-05",
-      month: "WEEKLY",
-      day: "WED",
-      time: "4:00 PM EAT",
-      location: "Virtual",
-      price: "FREE",
-      isFree: true,
-      isNew: true,
-      category: "Support Group",
-      href: "/events/youth-anxiety-group",
-    },
-  ];
-
-  // Blog posts data
-  const blogPosts = [
-    {
-      id: 1,
-      title: "5 Signs You Might Benefit from Therapy",
-      excerpt: "Recognizing when to seek help is a sign of strength, not weakness. Here are five signs that therapy could be beneficial for you.",
-      date: "April 10, 2026",
-      category: "Mental Health",
-      readTime: "5 min read",
-      image: "/blog-placeholder-1.jpg",
-      href: "/blog/signs-you-need-therapy",
-    },
-    {
-      id: 2,
-      title: "New Online Counseling Sessions Now Available",
-      excerpt: "Access professional counseling from the comfort of your home. Learn how our virtual sessions work and how to get started.",
-      date: "April 5, 2026",
-      category: "Announcement",
-      readTime: "3 min read",
-      image: "/blog-placeholder-2.jpg",
-      href: "/blog/online-counseling",
-    },
-    {
-      id: 3,
-      title: "World Mental Health Day Event Recap",
-      excerpt: "Highlights from our community outreach event, including key takeaways and resources shared with attendees.",
-      date: "March 28, 2026",
-      category: "Community",
-      readTime: "4 min read",
-      image: "/blog-placeholder-3.jpg",
-      href: "/blog/wmhd-recap",
-    },
-  ];
-
-  const fadeUpVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  const nextAnnouncement = () => {
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentAnnouncementIndex((prev) => (prev + 1) % announcements.length);
+      setIsFading(false);
+    }, 300);
   };
 
-  const staggerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15 }
-    }
+  const prevAnnouncement = () => {
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentAnnouncementIndex((prev) => (prev - 1 + announcements.length) % announcements.length);
+      setIsFading(false);
+    }, 300);
   };
 
-  const childVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  const goToAnnouncement = (index: number) => {
+    setIsFading(true);
+    setTimeout(() => {
+      setCurrentAnnouncementIndex(index);
+      setIsFading(false);
+    }, 300);
   };
+
+  if (!isClient) {
+    return (
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">Loading...</div>
+        </div>
+      </section>
+    );
+  }
+
+  const currentAnnouncement = announcements[currentAnnouncementIndex];
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-28 bg-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div 
-        className="absolute top-0 left-0 w-full h-96"
-        style={{ 
-          background: 'radial-gradient(circle at 0% 0%, var(--color-lavender) 0%, transparent 70%)',
-          opacity: 0.3
-        }}
-      />
-
-      <div className="container-counseling relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 md:py-28 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-12"
-        >
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: 'var(--color-lavender)' }}>
-            <Calendar size={14} style={{ color: 'var(--color-primary)' }} />
-            <span className="text-sm font-medium" style={{ color: 'var(--color-primary-dark)' }}>
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: '#F8F6FF' }}>
+            <Calendar size={14} style={{ color: '#2D6A4F' }} />
+            <span className="text-sm font-medium" style={{ color: '#1B4332' }}>
               Stay Connected
             </span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-serif mb-4" style={{ color: 'var(--foreground)' }}>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-serif mb-4" style={{ color: '#171717' }}>
             Events &{' '}
-            <span className="text-gradient-primary">Updates</span>
+            <span style={{ background: 'linear-gradient(135deg, #2D6A4F 0%, #6D28D9 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', color: 'transparent' }}>
+              Updates
+            </span>
           </h2>
-          <p className="text-lg sm:text-xl" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+          <p className="text-lg sm:text-xl" style={{ color: '#171717', opacity: 0.7 }}>
             Join our community programs and stay informed with the latest mental health resources
           </p>
-        </motion.div>
+        </div>
 
-        {/* Scrolling Announcement Ticker */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.1, duration: 0.6 }}
+        {/* Fading Announcement Carousel */}
+        <div 
           className="mb-12 rounded-2xl overflow-hidden"
-          style={{ background: 'var(--color-warm-bg)', border: '1px solid var(--color-accent)' }}
+          style={{ background: '#FEF3C7', border: '1px solid #FBBF24' }}
         >
-          <div 
-            className="flex items-center gap-3 px-4 py-3"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+          <div className="flex items-center gap-3 px-4 py-4">
+            {/* Megaphone Icon */}
             <div className="flex items-center gap-2 flex-shrink-0">
               <div 
                 className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ background: 'var(--color-accent)', opacity: 0.15 }}
+                style={{ background: '#FBBF24', opacity: 0.15 }}
               >
-                <Megaphone size={16} style={{ color: 'var(--color-accent-dark)' }} />
+                <Megaphone size={16} style={{ color: '#F59E0B' }} />
               </div>
-              <span className="text-sm font-semibold hidden sm:inline" style={{ color: 'var(--color-accent-dark)' }}>
-                Announcements:
+              <span className="text-sm font-semibold hidden sm:inline" style={{ color: '#F59E0B' }}>
+                Announcement:
               </span>
             </div>
             
-            <div className="relative flex-1 overflow-hidden">
-              <div 
-                className="flex gap-12 whitespace-nowrap"
-                style={{
-                  animation: isPaused ? 'none' : 'marquee 60s linear infinite',
-                }}
+            {/* Fading Announcement Text */}
+            <div className="flex-1 min-h-[60px] flex items-center">
+              <Link
+                href={currentAnnouncement.link}
+                className={`text-sm transition-all duration-300 hover:opacity-70 cursor-pointer block w-full ${
+                  isFading ? 'opacity-0 transform translate-y-2' : 'opacity-100 transform translate-y-0'
+                }`}
+                style={{ color: '#171717', opacity: 0.8 }}
               >
-                {[...announcements, ...announcements].map((announcement, idx) => (
-                  <Link
-                    key={`${announcement.id}-${idx}`}
-                    href={announcement.link}
-                    className="text-sm hover:opacity-70 transition-all duration-200"
-                    style={{ color: 'var(--foreground)', opacity: 0.8 }}
-                  >
-                    {announcement.text}
-                  </Link>
-                ))}
-              </div>
+                {currentAnnouncement.text}
+              </Link>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={prevAnnouncement}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer"
+                style={{ background: '#FBBF24', opacity: 0.8, color: '#171717' }}
+                aria-label="Previous announcement"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={nextAnnouncement}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer"
+                style={{ background: '#FBBF24', opacity: 0.8, color: '#171717' }}
+                aria-label="Next announcement"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
           </div>
-        </motion.div>
+
+          {/* Pagination Dots */}
+          <div className="flex justify-center gap-2 pb-3">
+            {announcements.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goToAnnouncement(idx)}
+                className="h-1.5 rounded-full transition-all duration-200 cursor-pointer"
+                style={{
+                  background: '#F59E0B',
+                  opacity: idx === currentAnnouncementIndex ? 1 : 0.3,
+                  width: idx === currentAnnouncementIndex ? '24px' : '8px',
+                }}
+                aria-label={`Go to announcement ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* Two-Column Layout */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           
           {/* LEFT COLUMN - Upcoming Events */}
-          <motion.div
-            variants={staggerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            transition={{ delay: 0.2 }}
-          >
-            {/* Column Header */}
+          <div>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <div 
                   className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: 'var(--color-primary)', opacity: 0.1 }}
+                  style={{ background: '#2D6A4F', opacity: 0.1 }}
                 >
-                  <Calendar size={16} style={{ color: 'var(--color-primary)' }} />
+                  <Calendar size={16} style={{ color: '#2D6A4F' }} />
                 </div>
-                <h3 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+                <h3 className="text-xl font-bold" style={{ color: '#171717' }}>
                   Upcoming Events
                 </h3>
               </div>
               <Link 
                 href="/events" 
                 className="text-sm flex items-center gap-1 transition-all hover:gap-2"
-                style={{ color: 'var(--color-primary)' }}
+                style={{ color: '#2D6A4F' }}
               >
                 View All <ChevronRight size={14} />
               </Link>
             </div>
 
-            {/* Event Cards */}
             <div className="space-y-4">
-              {events.map((event, idx) => (
-                <motion.div
+              {eventsData.map((event) => (
+                <div
                   key={event.id}
-                  variants={childVariants}
                   className="group bg-white rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                   style={{ 
                     border: '1px solid',
@@ -267,34 +278,32 @@ export const EventsUpdatesSection = () => {
                   }}
                 >
                   <div className="flex gap-4">
-                    {/* Date Badge */}
                     <div 
                       className="flex-shrink-0 w-16 text-center rounded-xl py-2"
                       style={{ 
-                        background: `linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)`,
+                        background: 'linear-gradient(135deg, #2D6A4F 0%, #1B4332 100%)',
                       }}
                     >
                       <div className="text-white text-xs font-semibold">{event.month}</div>
                       <div className="text-white text-xl font-bold leading-tight">{event.day}</div>
                     </div>
 
-                    {/* Event Details */}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h4 className="font-semibold text-base" style={{ color: 'var(--foreground)' }}>
+                        <h4 className="font-semibold text-base" style={{ color: '#171717' }}>
                           {event.title}
                         </h4>
                         {event.isNew && (
                           <span 
                             className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                            style={{ background: 'var(--color-accent)', color: 'var(--foreground)' }}
+                            style={{ background: '#FBBF24', color: '#171717' }}
                           >
                             NEW
                           </span>
                         )}
                       </div>
                       
-                      <div className="flex flex-wrap gap-3 text-xs mb-2" style={{ color: 'var(--foreground)', opacity: 0.6 }}>
+                      <div className="flex flex-wrap gap-3 text-xs mb-2" style={{ color: '#171717', opacity: 0.6 }}>
                         <span className="flex items-center gap-1">
                           <Clock size={12} /> {event.time}
                         </span>
@@ -307,145 +316,118 @@ export const EventsUpdatesSection = () => {
                         <span 
                           className="text-xs font-semibold px-2 py-0.5 rounded-full"
                           style={event.isFree ? { 
-                            background: 'var(--color-primary)', 
+                            background: '#2D6A4F', 
                             opacity: 0.1, 
-                            color: 'var(--color-primary)' 
+                            color: '#2D6A4F' 
                           } : { 
-                            background: 'var(--color-secondary)', 
+                            background: '#6D28D9', 
                             opacity: 0.1, 
-                            color: 'var(--color-secondary)' 
+                            color: '#6D28D9' 
                           }}
                         >
                           {event.price}
                         </span>
                         <Link 
                           href={event.href}
-                          className="text-sm flex items-center gap-1 transition-all group-hover:gap-2"
-                          style={{ color: 'var(--color-primary)' }}
+                          className="text-sm flex items-center gap-1 transition-all group-hover:gap-2 cursor-pointer"
+                          style={{ color: '#2D6A4F' }}
                         >
                           {event.title.includes("Support") ? "Learn more" : "Register"} <ArrowRight size={14} />
                         </Link>
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* RIGHT COLUMN - Recent Blog Posts */}
-          <motion.div
-            variants={staggerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            transition={{ delay: 0.3 }}
-          >
-            {/* Column Header */}
+          <div>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <div 
                   className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ background: 'var(--color-secondary)', opacity: 0.1 }}
+                  style={{ background: '#6D28D9', opacity: 0.1 }}
                 >
-                  <MessageCircle size={16} style={{ color: 'var(--color-secondary)' }} />
+                  <MessageCircle size={16} style={{ color: '#6D28D9' }} />
                 </div>
-                <h3 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+                <h3 className="text-xl font-bold" style={{ color: '#171717' }}>
                   Latest Articles
                 </h3>
               </div>
               <Link 
                 href="/blog" 
                 className="text-sm flex items-center gap-1 transition-all hover:gap-2"
-                style={{ color: 'var(--color-primary)' }}
+                style={{ color: '#2D6A4F' }}
               >
                 View All <ChevronRight size={14} />
               </Link>
             </div>
 
-            {/* Blog Posts */}
             <div className="space-y-5">
-              {blogPosts.map((post, idx) => (
-                <motion.div
+              {blogPostsData.map((post) => (
+                <div
                   key={post.id}
-                  variants={childVariants}
                   className="group flex gap-4 p-3 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-md"
                 >
-                  {/* Thumbnail Placeholder */}
                   <div 
-                    className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden"
-                    style={{ background: 'var(--color-lavender)' }}
+                    className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center"
+                    style={{ background: '#F8F6FF' }}
                   >
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Heart size={24} style={{ color: 'var(--color-primary)', opacity: 0.3 }} />
-                    </div>
+                    <Heart size={24} style={{ color: '#2D6A4F', opacity: 0.3 }} />
                   </div>
 
-                  {/* Post Content */}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span 
                         className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: 'var(--color-secondary)', opacity: 0.1, color: 'var(--color-secondary)' }}
+                        style={{ background: '#6D28D9', opacity: 0.1, color: '#6D28D9' }}
                       >
                         {post.category}
                       </span>
-                      <span className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.5 }}>
+                      <span className="text-xs" style={{ color: '#171717', opacity: 0.5 }}>
                         {post.readTime}
                       </span>
                     </div>
-                    <h4 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors" style={{ color: 'var(--foreground)' }}>
+                    <h4 className="font-semibold text-sm mb-1 transition-colors" style={{ color: '#171717' }}>
                       {post.title}
                     </h4>
-                    <p className="text-xs mb-2 line-clamp-2" style={{ color: 'var(--foreground)', opacity: 0.6 }}>
+                    <p className="text-xs mb-2 line-clamp-2" style={{ color: '#171717', opacity: 0.6 }}>
                       {post.excerpt}
                     </p>
                     <Link 
                       href={post.href}
-                      className="text-xs flex items-center gap-1 transition-all group-hover:gap-2"
-                      style={{ color: 'var(--color-primary)' }}
+                      className="text-xs flex items-center gap-1 transition-all hover:gap-2 cursor-pointer"
+                      style={{ color: '#2D6A4F' }}
                     >
                       Read more <ArrowRight size={12} />
                     </Link>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="text-center mt-12 pt-8 border-t"
-          style={{ borderColor: 'var(--color-lavender)' }}
-        >
-          <p className="mb-4" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+        <div className="text-center mt-12 pt-8 border-t" style={{ borderColor: '#F8F6FF' }}>
+          <p className="mb-4" style={{ color: '#171717', opacity: 0.7 }}>
             Want to stay updated on all events and mental health resources?
           </p>
           <Link
             href="/newsletter"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
             style={{ 
-              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)',
-              color: 'white'
+              background: 'linear-gradient(135deg, #2D6A4F 0%, #1B4332 100%)',
             }}
           >
             <Star size={18} />
             <span>Subscribe to Our Newsletter</span>
-            <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            <ArrowRight size={16} />
           </Link>
-        </motion.div>
+        </div>
       </div>
-
-      {/* CSS Animation for Marquee */}
-      <style jsx>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
     </section>
   );
 };

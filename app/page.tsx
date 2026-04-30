@@ -9,6 +9,7 @@ import { getAllNews } from '@/lib/wordpress'
 import { HeroSection } from '@/components/home-page/HeroSection'
 import { ServicesSection } from '@/components/home-page/ServicesSection'
 import { ProgramsSection } from '@/components/home-page/ProgramsSection'
+import { EventsUpdatesSection } from '@/components/home-page/EventsUpdatesSection'
 
 export const metadata: Metadata = {
   title: 'Africana College of Professionals | Professional Courses in Kenya',
@@ -81,6 +82,7 @@ export default async function Home() {
       <div>
         <HeroSection/>
         <ServicesSection/>
+        <EventsUpdatesSection/>
         <ProgramsSection/>
       </div>
     </>

@@ -10,10 +10,9 @@ import { usePathname } from 'next/navigation';
 // Updated menu items for SGCF
 const sgcfMenuItems = [
   { label: 'Home', href: '/', id: 'home' },
-  { label: 'About Us', href: '/about', id: 'about' },
+  { label: 'About', href: '/about', id: 'about' },
   { label: 'Services', href: '/services', id: 'services' },
-  { label: 'Get Involved', href: '/get-involved', id: 'involved' },
-  { label: 'Resources', href: '/resources', id: 'resources' },
+  { label: 'Blog', href: '/blog', id: 'blog' },
   { label: 'Contact', href: '/contact', id: 'contact' },
 ];
 
@@ -49,7 +48,7 @@ export const SGCFHeader = () => {
 
   return (
     <>
-      {/* Top Bar - Helpline & Quick Contact using CSS variables */}
+      {/* Top Bar - Helpline & Quick Contact */}
       <div 
         className="hidden md:block text-white text-sm" 
         style={{ 
@@ -94,7 +93,7 @@ export const SGCFHeader = () => {
           fixed left-0 w-full z-50 transition-all duration-500
           ${isScrolled 
             ? 'top-0 bg-white/95 backdrop-blur-md shadow-lg py-3' 
-            : 'top-[38px] bg-white/90 backdrop-blur-sm shadow-md py-5'
+            : 'top-0 md:top-[38px] bg-white/90 backdrop-blur-sm shadow-md py-5'
           }
         `}
       >
@@ -124,7 +123,7 @@ export const SGCFHeader = () => {
                   ${isScrolled ? 'text-lg' : 'text-xl'}
                 `}>
                   <span className="text-gradient-primary">
-                    Susan Gitau
+                    Susan Gitau Counseling Foundation
                   </span>
                 </h1>
                 <p className="text-xs text-gray-500 -mt-0.5">
@@ -155,7 +154,6 @@ export const SGCFHeader = () => {
                       {item.label}
                     </span>
                     
-                    {/* Animated underline effect using CSS variables */}
                     <span 
                       className={`
                         absolute inset-x-2 -bottom-1 h-0.5 rounded-full transition-transform duration-300 origin-left
@@ -170,7 +168,6 @@ export const SGCFHeader = () => {
 
             {/* CTA Buttons */}
             <div className="flex items-center space-x-3">
-              {/* Book Appointment - Primary CTA using CSS variables */}
               <Link
                 href="/book-appointment"
                 className="hidden md:flex items-center space-x-2 px-5 py-2.5 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 text-white"
@@ -182,7 +179,6 @@ export const SGCFHeader = () => {
                 <span>Book Appointment</span>
               </Link>
 
-              {/* Donate Button - Secondary using highlight color */}
               <Link
                 href="/donate"
                 className="hidden md:flex items-center space-x-2 px-5 py-2.5 rounded-full font-semibold transition-all duration-300 hover:bg-opacity-10"
@@ -195,7 +191,6 @@ export const SGCFHeader = () => {
                 <span>Donate</span>
               </Link>
 
-              {/* Mobile Menu Button - Fixed: removed invalid hover property */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden relative w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors rounded-lg"
@@ -232,7 +227,6 @@ export const SGCFHeader = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -241,7 +235,6 @@ export const SGCFHeader = () => {
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             />
 
-            {/* Slide Menu */}
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
@@ -249,7 +242,6 @@ export const SGCFHeader = () => {
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className="fixed left-0 top-0 w-full max-w-sm h-full bg-white shadow-2xl z-50 overflow-y-auto"
             >
-              {/* Mobile Menu Header */}
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -278,7 +270,6 @@ export const SGCFHeader = () => {
                 </div>
               </div>
 
-              {/* Mobile Navigation */}
               <nav className="py-6 px-4">
                 <ul className="space-y-2">
                   {sgcfMenuItems.map((item, idx) => {
@@ -319,7 +310,6 @@ export const SGCFHeader = () => {
                   })}
                 </ul>
 
-                {/* Mobile Action Buttons */}
                 <div className="mt-8 space-y-3">
                   <Link
                     href="/book-appointment"
@@ -346,7 +336,6 @@ export const SGCFHeader = () => {
                     <span>Make a Donation</span>
                   </Link>
 
-                  {/* Crisis Support Banner using warm-bg */}
                   <div 
                     className="mt-6 p-4 rounded-xl border"
                     style={{ 
@@ -376,8 +365,7 @@ export const SGCFHeader = () => {
         )}
       </AnimatePresence>
 
-      {/* Spacer to prevent content from hiding under fixed header */}
-      <div className={`transition-all duration-500 ${isScrolled ? 'h-[72px]' : 'h-[110px]'}`} />
+      {/* No spacer div - removed to fix spacing */}
     </>
   );
 };
