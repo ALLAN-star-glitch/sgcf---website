@@ -13,6 +13,7 @@ const sgcfMenuItems = [
   { label: 'About', href: '/about', id: 'about' },
   { label: 'Services', href: '/services', id: 'services' },
   { label: 'Blog', href: '/blog', id: 'blog' },
+  { label: 'Events', href: '/events', id: 'events' },
   { label: 'Contact', href: '/contact', id: 'contact' },
 ];
 
