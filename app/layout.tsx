@@ -6,7 +6,6 @@ import { Footer } from "@/components/footer/Footer";
 import Script from "next/script";
 import { SGCFHeader } from "@/components/header/SGCFHeader";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,28 +21,30 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// ✅ Layout metadata - ONLY global stuff, NO openGraph or twitter
+// ✅ Metadata for Susan Gitau Counseling Foundation (SGCF)
 export const metadata: Metadata = {
   title: {
-    default: "Africana College of Professionals",
-    template: "%s | Africana College of Professionals"
+    default: "Susan Gitau Counseling Foundation",
+    template: "%s | Susan Gitau Counseling Foundation"
   },
-  // Optional: generic fallback description (rarely used)
-  description: "Professional courses and training in Kenya",
+  description: "Susan Gitau Counseling Foundation (SGCF) provides professional counseling services, mental health support, and counselor training in Kenya.",
   keywords: [
-    "Africana College",
-    "professional courses",
-    "career development",
-    "scholarships",
-    "online learning",
-    "Kenya",
+    "Susan Gitau Counseling Foundation",
+    "SGCF",
+    "counseling foundation",
+    "mental health",
+    "counseling services",
+    "counselor training",
+    "therapy",
+    "Kenya"
   ].join(", "),
-  robots: "index, follow",
-  alternates: {
-    canonical: "https://www.acop.co.ke/",
+  robots: {
+    index: true,
+    follow: true,
   },
-  // ❌ NO openGraph here
-  // ❌ NO twitter here
+  alternates: {
+    canonical: "https://www.sgcf.or.ke/", // Update with your actual SGCF domain
+  },
 };
 
 export default function RootLayout({
@@ -51,11 +52,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Google Analytics Measurement ID for SGCF
+  const gaMeasurementId = "G-VNBL38NRY3";
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-       <SGCFHeader/>
-  
+        <SGCFHeader/>
         <main>{children}</main>
         <Footer />
 
@@ -66,8 +69,9 @@ export default function RootLayout({
           async={true}
         />
 
+        {/* Google Analytics for SGCF - G-VNBL38NRY3 */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-DGCXCNRGHE"
+          src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
           strategy="afterInteractive"
         />
 
@@ -76,17 +80,18 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-DGCXCNRGHE');
+            gtag('config', '${gaMeasurementId}');
           `}
         </Script>
 
+        {/* Tawk.to Script for Susan Gitau Counseling Foundation (SGCF) */}
         <Script id="tawk-to" strategy="afterInteractive">
           {`
             var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
             (function(){
               var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
               s1.async=true;
-              s1.src='https://embed.tawk.to/65f9bebda0c6737bd1228acc/1hpbp26fh';
+              s1.src='https://embed.tawk.to/65f9c3cba0c6737bd1228c52/1hpbq9llq';
               s1.charset='UTF-8';
               s1.setAttribute('crossorigin','*');
               s0.parentNode.insertBefore(s1,s0);
