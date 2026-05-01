@@ -105,17 +105,17 @@ const ContactInfoSection = () => {
     {
       icon: Phone,
       title: "Call Us",
-      details: ["+254 700 000 000", "+254 700 000 001"],
+      details: ["+254722367619", "+254722367619"],
       description: "24/7 Crisis Helpline Available",
-      action: "tel:+254700000000",
+      action: "tel:+254722367619",
       color: "var(--color-primary)"
     },
     {
       icon: Mail,
       title: "Email Us",
-      details: ["hello@sgcfoundation.org", "support@sgcfoundation.org"],
+      details: ["info@sgcfoundation.org", "support@sgcfoundation.org"],
       description: "Response within 24 hours",
-      action: "mailto:hello@sgcfoundation.org",
+      action: "mailto:info@sgcfoundation.org",
       color: "var(--color-secondary)"
     },
     {
@@ -386,12 +386,12 @@ const ContactFormSection = ({ handleSubmit, formStatus }: {
                 If you&apos;re in crisis and need immediate support
               </p>
               <a
-                href="tel:+254700000000"
+                href="tel:+254722367619"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-105"
                 style={{ background: 'var(--color-highlight)' }}
               >
                 <Phone size={18} />
-                <span>+254 700 000 000</span>
+                <span>+254722367619</span>
               </a>
               <p className="text-xs mt-4" style={{ color: 'var(--foreground)', opacity: 0.5 }}>
                 For life-threatening emergencies, please call 999 or visit your nearest hospital.

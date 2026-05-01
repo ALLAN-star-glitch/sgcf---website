@@ -187,7 +187,7 @@ export default function BookAppointmentPage() {
                           borderColor: `${'var(--color-primary)'}30`,
                           background: 'white'
                         }}
-                        placeholder="+254 700 000 000"
+                        placeholder="+254722367619"
                       />
                     </div>
                   </div>
@@ -391,12 +391,12 @@ export default function BookAppointmentPage() {
                   Call our 24/7 Crisis Helpline
                 </p>
                 <a
-                  href="tel:+254700000000"
+                  href="tel:+254722367619"
                   className="inline-flex items-center gap-1 text-sm font-semibold"
                   style={{ color: 'var(--color-highlight)' }}
                 >
                   <Phone size={14} />
-                  +254 700 000 000
+                  +254722367619
                 </a>
               </div>
             </motion.div>

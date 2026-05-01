@@ -160,8 +160,8 @@ export const Footer = () => {
                 <Phone size={16} style={{ color: 'var(--color-primary)' }} className="mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Crisis Helpline (24/7)</p>
-                  <a href="tel:+254700000000" className="text-sm font-semibold" style={{ color: 'var(--color-highlight)' }}>
-                    +254 700 000 000
+                  <a href="tel:+254722367619" className="text-sm font-semibold" style={{ color: 'var(--color-highlight)' }}>
+                    +254722367619
                   </a>
                 </div>
               </li>
@@ -169,8 +169,8 @@ export const Footer = () => {
                 <Mail size={16} style={{ color: 'var(--color-primary)' }} className="mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Email</p>
-                  <a href="mailto:hello@sgcfoundation.org" className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
-                    hello@sgcfoundation.org
+                  <a href="mailto:info@sgcfoundation.org" className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
+                    info@sgcfoundation.org
                   </a>
                 </div>
               </li>
@@ -179,8 +179,8 @@ export const Footer = () => {
                 <div>
                   <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.6 }}>Location</p>
                   <p className="text-sm" style={{ color: 'var(--foreground)', opacity: 0.7 }}>
-                    Karen Medical Centre, Suite 204<br />
-                    Nairobi, Kenya
+                    Imara Plaza<br />
+                    Thika, Kenya
                   </p>
                 </div>
               </li>
