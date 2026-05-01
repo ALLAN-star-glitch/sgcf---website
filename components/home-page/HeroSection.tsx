@@ -156,7 +156,7 @@ export const HeroSection = () => {
              {/* Main Illustration - Therapy Room Image */}
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                    src="/hero-therapy-room.png"
+                    src="/og-image.webp"
                     alt="Calm therapy room with natural light"
                     width={500}
                     height={500}

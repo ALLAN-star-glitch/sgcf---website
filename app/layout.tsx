@@ -5,7 +5,7 @@ import "./globals.css";
 import { Footer } from "@/components/footer/Footer";
 import Script from "next/script";
 import { SGCFHeader } from "@/components/header/SGCFHeader";
-// import { MainHeaderWrapper } from "@/components/MainHeaderWrapper";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +55,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
        <SGCFHeader/>
+  
         <main>{children}</main>
         <Footer />
 
