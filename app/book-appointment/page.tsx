@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://sgcfoundation.org/og-booking.jpg',
+        url: 'https://sgcfoundation.org/og-booking.png',
         width: 1200,
         height: 630,
         alt: 'Book an Appointment with Susan Gitau Counseling Foundation',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Book an Appointment | SGCF',
     description: 'Schedule counseling or inquire about philanthropy partnerships.',
-    images: ['https://sgcfoundation.org/og-booking.jpg'],
+    images: ['https://sgcfoundation.org/og-booking.png'],
   },
 };
 
