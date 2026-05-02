@@ -125,7 +125,7 @@ export const HeroSection = () => {
 
               {/* Secondary CTA - Crisis Helpline with Pulse Animation */}
               <Link
-                href="tel:+254700000000"
+                href="tel:+254722367619"
                 className="btn-helpline inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
               >
                 <Phone size={18} />
