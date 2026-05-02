@@ -91,7 +91,6 @@ export const SGCFHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openMegaMenu, setOpenMegaMenu] = useState(false);
   const [openMobileSubmenu, setOpenMobileSubmenu] = useState(false);
-  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const aboutButtonRef = useRef<HTMLDivElement>(null);
@@ -102,6 +101,7 @@ export const SGCFHeader = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mega menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (megaMenuRef.current && !megaMenuRef.current.contains(event.target as Node) &&
@@ -135,56 +135,10 @@ export const SGCFHeader = () => {
     };
   }, [mobileMenuOpen]);
 
-  // Replace the handleMouseLeave function with this:
-
-const handleMouseEnter = () => {
-  if (hoverTimeout) {
-    clearTimeout(hoverTimeout);
-    setHoverTimeout(null);
-  }
-  setOpenMegaMenu(true);
-};
-
-const handleMouseLeave = () => {
-  // Don't close immediately if we're moving to the mega menu
-  const timeout = setTimeout(() => {
-    // Check if mouse is now over the mega menu
-    if (megaMenuRef.current && !megaMenuRef.current.matches(':hover')) {
-      setOpenMegaMenu(false);
-    }
-  }, 100); // Reduced timeout for better responsiveness
-  setHoverTimeout(timeout);
-};
-
-// Add this effect to handle hover on the mega menu itself
-useEffect(() => {
-  const handleMegaMenuHover = () => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      setHoverTimeout(null);
-    }
+  // Click handler for mega menu toggle
+  const handleMegaMenuClick = () => {
+    setOpenMegaMenu(!openMegaMenu);
   };
-
-  const handleMegaMenuLeave = () => {
-    const timeout = setTimeout(() => {
-      setOpenMegaMenu(false);
-    }, 100);
-    setHoverTimeout(timeout);
-  };
-
-  const megaMenuElement = megaMenuRef.current;
-  if (megaMenuElement) {
-    megaMenuElement.addEventListener('mouseenter', handleMegaMenuHover);
-    megaMenuElement.addEventListener('mouseleave', handleMegaMenuLeave);
-  }
-
-  return () => {
-    if (megaMenuElement) {
-      megaMenuElement.removeEventListener('mouseenter', handleMegaMenuHover);
-      megaMenuElement.removeEventListener('mouseleave', handleMegaMenuLeave);
-    }
-  };
-}, [openMegaMenu]); // Re-run when mega menu opens/closes
 
   return (
     <>
@@ -283,82 +237,92 @@ useEffect(() => {
                     key={item.label}
                     ref={hasMegaMenu ? aboutButtonRef : null}
                     className="relative"
-                    onMouseEnter={() => hasMegaMenu && handleMouseEnter()}
-                    onMouseLeave={handleMouseLeave}
                   >
-                    <Link
-                      href={item.href}
-                      className={`
-                        relative px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-1
-                        ${isActive 
-                          ? 'font-semibold' 
-                          : 'text-gray-700 hover:text-primary'
-                        }
-                      `}
-                      style={isActive ? { color: 'var(--color-primary)' } : {}}
+                    {/* Button wrapper for click handling */}
+                    <div
+                      onClick={hasMegaMenu ? handleMegaMenuClick : undefined}
+                      className="cursor-pointer"
                     >
-                      <span className="relative z-10 text-sm font-medium">
-                        {item.label}
-                      </span>
-                      {hasMegaMenu && (
-                        <ChevronDown 
-                          size={14} 
-                          className={`transition-transform duration-300 ${openMegaMenu ? 'rotate-180' : ''}`}
-                          style={{ color: isActive ? 'var(--color-primary)' : '#6B7280' }}
-                        />
-                      )}
-                      
-                      <span 
+                      <Link
+                        href={item.href}
                         className={`
-                          absolute inset-x-2 -bottom-1 h-0.5 rounded-full transition-transform duration-300 origin-left
-                          ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}
+                          relative px-4 py-2 rounded-full transition-all duration-300 flex items-center gap-1
+                          ${isActive 
+                            ? 'font-semibold' 
+                            : 'text-gray-700 hover:text-primary'
+                          }
                         `}
-                        style={{ background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))' }}
-                      />
-                    </Link>
+                        style={isActive ? { color: 'var(--color-primary)' } : {}}
+                        onClick={(e) => {
+                          // If it has mega menu, prevent navigation and just toggle menu
+                          if (hasMegaMenu) {
+                            e.preventDefault();
+                          }
+                        }}
+                      >
+                        <span className="relative z-10 text-sm font-medium">
+                          {item.label}
+                        </span>
+                        {hasMegaMenu && (
+                          <ChevronDown 
+                            size={14} 
+                            className={`transition-transform duration-300 ${openMegaMenu ? 'rotate-180' : ''}`}
+                            style={{ color: isActive ? 'var(--color-primary)' : '#6B7280' }}
+                          />
+                        )}
+                        
+                        <span 
+                          className={`
+                            absolute inset-x-2 -bottom-1 h-0.5 rounded-full transition-transform duration-300 origin-left
+                            ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}
+                          `}
+                          style={{ background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))' }}
+                        />
+                      </Link>
+                    </div>
 
-                 {/* Mega Menu Dropdown - Centered with reduced space */}
-                  {hasMegaMenu && openMegaMenu && (
-                    <motion.div
-                      ref={megaMenuRef}
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      transition={{ duration: 0.2 }}
-                      className="fixed left-1/2 transform -translate-x-1/2 mt-1 w-[880px] bg-white rounded-xl shadow-2xl overflow-hidden z-50"
-                      style={{ 
-                        border: '1px solid rgba(0, 0, 0, 0.08)',
-                        top: isScrolled ? '56px' : '100px',
-                      }}
-                    >
-                        {/* Decorative Top Bar - Thinner */}
+                    {/* Mega Menu Dropdown - Opens on click */}
+                    {hasMegaMenu && openMegaMenu && (
+                      <motion.div
+                        ref={megaMenuRef}
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed left-1/2 transform -translate-x-1/2 mt-1 w-[880px] bg-white rounded-xl shadow-2xl overflow-hidden z-50"
+                        style={{ 
+                          border: '1px solid rgba(0, 0, 0, 0.08)',
+                          top: isScrolled ? '56px' : '100px',
+                          pointerEvents: 'auto'
+                        }}
+                      >
+                        {/* Decorative Top Bar */}
                         <div className="h-0.5 bg-gradient-to-r from-primary via-secondary to-accent" />
                         
                         <div className="p-5">
                           {/* Main Section with Image and Name */}
                           <div className="flex gap-5 mb-5 pb-4 border-b border-gray-100">
-                          {/* Founder Image with Name Below - CLICKABLE */}
-                        <Link 
-                          href="/about/dr-susan-gitau"
-                          className="flex-shrink-0 w-28 text-center group block"
-                          onClick={() => setOpenMegaMenu(false)}
-                        >
-                          <div className="w-28 h-28 rounded-xl overflow-hidden shadow-md bg-gray-100 mx-auto transition-transform duration-300 group-hover:scale-105">
-                            <Image
-                              src={megaMenuSections.main.image}
-                              alt={megaMenuSections.main.imageAlt}
-                              width={112}
-                              height={112}
-                              className="w-full h-full object-cover object-top"
-                            />
-                          </div>
-                          {/* Founder Name Below Image */}
-                          <div className="mt-2">
-                            <p className="text-xs font-bold text-gray-800 group-hover:text-primary transition-colors">Dr. Susan Gitau</p>
-                            <p className="text-[10px] text-primary">Founder & Director</p>
-                          </div>
-                        </Link>
-                                                    
+                            {/* Founder Image with Name Below - CLICKABLE */}
+                            <Link 
+                              href="/about/dr-susan-gitau"
+                              className="flex-shrink-0 w-28 text-center group block"
+                              onClick={() => setOpenMegaMenu(false)}
+                            >
+                              <div className="w-28 h-28 rounded-xl overflow-hidden shadow-md bg-gray-100 mx-auto transition-transform duration-300 group-hover:scale-105">
+                                <Image
+                                  src={megaMenuSections.main.image}
+                                  alt={megaMenuSections.main.imageAlt}
+                                  width={112}
+                                  height={112}
+                                  className="w-full h-full object-cover object-top"
+                                />
+                              </div>
+                              <div className="mt-2">
+                                <p className="text-xs font-bold text-gray-800 group-hover:text-primary transition-colors">Dr. Susan Gitau</p>
+                                <p className="text-[10px] text-primary">Founder & Director</p>
+                              </div>
+                            </Link>
+                                                        
                             {/* Description */}
                             <div className="flex-1">
                               <h3 className="text-lg font-bold font-serif mb-1" style={{ color: '#171717' }}>
@@ -377,7 +341,7 @@ useEffect(() => {
                             </div>
                           </div>
 
-                          {/* Column Grid - Reduced gap */}
+                          {/* Column Grid */}
                           <div className="grid grid-cols-4 gap-4">
                             {megaMenuSections.columns.map((column, idx) => {
                               const Icon = column.icon;
@@ -427,7 +391,7 @@ useEffect(() => {
                           </div>
                         </div>
 
-                        {/* Bottom CTA Bar - Compact */}
+                        {/* Bottom CTA Bar */}
                         <div className="bg-gradient-to-r from-primary/5 to-secondary/5 px-5 py-3 border-t border-gray-100">
                           <div className="flex items-center justify-between">
                             <div>
