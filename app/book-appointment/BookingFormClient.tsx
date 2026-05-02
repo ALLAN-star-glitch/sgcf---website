@@ -2,12 +2,54 @@
 'use client';
 
 import { Calendar, Clock, Shield, Phone, Mail, Sparkles, Heart, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function BookingFormClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [iframeError, setIframeError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const maxRetries = 3;
   const bookingPageUrl = 'https://cms.acop.co.ke/booking';
+
+  // Initialize iframe URL with cache busting
+  useEffect(() => {
+    const bustedUrl = bookingPageUrl + 
+      (bookingPageUrl.includes('?') ? '&' : '?') + 
+      '_t=' + Date.now();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIframeUrl(bustedUrl);
+  }, [retryCount]); // Re-run when retryCount changes
+
+  // Auto-retry logic
+  useEffect(() => {
+    if (iframeError && retryCount < maxRetries) {
+      const timer = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        setIframeError(false);
+        setIsLoading(true);
+      }, 2000); // Wait 2 seconds before retry
+      
+      return () => clearTimeout(timer);
+    }
+  }, [iframeError, retryCount]);
+
+  // Show permanent error after max retries
+  const showPermanentError = iframeError && retryCount >= maxRetries;
+
+  // Handle manual retry
+  const handleManualRetry = () => {
+    setRetryCount(0);
+    setIframeError(false);
+    setIsLoading(true);
+    const bustedUrl = bookingPageUrl + 
+      (bookingPageUrl.includes('?') ? '&' : '?') + 
+      '_t=' + Date.now();
+    setIframeUrl(bustedUrl);
+  };
+
+  // Don't render iframe until URL is ready
+  const shouldShowIframe = iframeUrl !== null && !showPermanentError;
 
   return (
     <div className="min-h-screen pt-32 pb-20">
@@ -66,7 +108,7 @@ export default function BookingFormClient() {
             {/* Loading Skeleton */}
             {isLoading && !iframeError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
-                {/* Animated Spinner */}
+                {/* Animated Spinner with retry count indicator */}
                 <div className="relative">
                   <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -77,7 +119,9 @@ export default function BookingFormClient() {
                 {/* Loading Text */}
                 <div className="mt-6 text-center">
                   <p className="text-gray-700 font-medium">Loading booking form...</p>
-                  <p className="text-gray-400 text-sm mt-1">Please wait while we prepare your secure form.</p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    {retryCount > 0 ? `Retry attempt ${retryCount} of ${maxRetries}...` : 'Please wait while we prepare your secure form.'}
+                  </p>
                 </div>
                 
                 {/* Loading Progress Indicator */}
@@ -90,53 +134,77 @@ export default function BookingFormClient() {
               </div>
             )}
 
-            {/* Error State */}
-            {iframeError && (
+            {/* Error State - Manual retry after max retries */}
+            {showPermanentError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
                 <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
                   <Calendar size={32} className="text-red-500" />
                 </div>
-                <p className="text-gray-700 font-medium">Unable to load booking form</p>
-                <p className="text-gray-400 text-sm mt-1 mb-4">Please try again or call us directly.</p>
-                <button
-                  onClick={() => {
-                    setIframeError(false);
-                    setIsLoading(true);
-                    // Force iframe reload
-                    const iframe = document.querySelector('iframe');
-                    if (iframe) {
-                      iframe.src = bookingPageUrl;
-                    }
-                  }}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-                >
-                  Try Again
-                </button>
+                <p className="text-gray-700 font-medium text-lg">Unable to load booking form</p>
+                <p className="text-gray-500 text-sm mt-2 mb-4 max-w-md text-center">
+                  We&apos;re experiencing technical difficulties. Please try again or call us directly to schedule your appointment.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleManualRetry}
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                  >
+                    Try Again
+                  </button>
+                  <a
+                    href="tel:+254722367619"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Call Us Instead
+                  </a>
+                </div>
               </div>
             )}
             
-            <iframe
-              src={bookingPageUrl}
-              width="100%"
-              height="750"
-              className="w-full transition-opacity duration-300"
-              style={{ 
-                minHeight: '700px', 
-                border: 'none',
-                opacity: isLoading ? 0 : 1
-              }}
-              title="SGCF Appointment Booking & Philanthropy Inquiry Form"
-              allow="payment"
-              loading="lazy"
-              onLoad={() => {
-                setIsLoading(false);
-                setIframeError(false);
-              }}
-              onError={() => {
-                setIsLoading(false);
-                setIframeError(true);
-              }}
-            />
+            {/* Temporary error state (before max retries) */}
+            {iframeError && !showPermanentError && retryCount < maxRetries && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-10">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-yellow-500/20 border-t-yellow-500 animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Sparkles size={24} className="text-yellow-500 animate-pulse" />
+                  </div>
+                </div>
+                <div className="mt-6 text-center">
+                  <p className="text-gray-700 font-medium">Retrying connection...</p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    Attempt {retryCount + 1} of {maxRetries}
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            {/* Only render iframe when URL is ready */}
+            {shouldShowIframe && (
+              <iframe
+                key={iframeUrl}
+                src={iframeUrl}
+                width="100%"
+                height="750"
+                className="w-full transition-opacity duration-300"
+                style={{ 
+                  minHeight: '700px', 
+                  border: 'none',
+                  opacity: isLoading ? 0 : 1
+                }}
+                title="SGCF Appointment Booking & Philanthropy Inquiry Form"
+                allow="payment"
+                loading="lazy"
+                onLoad={() => {
+                  setIsLoading(false);
+                  setIframeError(false);
+                }}
+                onError={() => {
+                  setIsLoading(false);
+                  setIframeError(true);
+                }}
+              />
+            )}
           </div>
         </div>
 
