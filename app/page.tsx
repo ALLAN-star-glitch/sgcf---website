@@ -130,7 +130,7 @@ export default async function Home() {
     '@context': 'https://schema.org',
     '@type': 'CounselingService',
     name: 'Susan Gitau Counseling Foundation',
-    description: 'Professional mental health counseling services in Kenya.',
+    description: 'Susan Gitau Counseling Foundation provides professional, compassionate mental health counseling services in Kenya, including individual therapy, couples counseling, trauma recovery, and community wellness programs.',
     provider: {
       '@type': 'Organization',
       name: 'Susan Gitau Counseling Foundation',
