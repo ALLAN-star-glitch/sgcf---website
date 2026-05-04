@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     default: "Susan Gitau Counseling Foundation",
     template: "%s | Susan Gitau Counseling Foundation"
   },
-  description: "Susan Gitau Counseling Foundation (SGCF) provides professional counseling services, mental health support, and counselor training in Kenya.",
+  description: "Susan Gitau Counseling Foundation (SGCF) is a non-profit organization dedicated to transforming lives through compassionate care, professional counseling, and community empowerment.",
   keywords: [
     "Susan Gitau Counseling Foundation",
     "SGCF",

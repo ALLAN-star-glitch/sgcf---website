@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Metadata } from 'next';
 import { HeroSection } from '@/components/home-page/HeroSection';
-import { ServicesSection } from '@/components/home-page/ServicesSection';
 import { ProgramsSection } from '@/components/home-page/ProgramsSection';
 import { EventsUpdatesSection } from '@/components/home-page/EventsUpdatesSection';
 import { getGalleryImages, getRecentEvents, getRecentPosts, getVideoData } from '@/lib/wordpress-sgcf';
+import { HeroSlider } from '@/components/home-page/HeroSlider';
+import { SuccessStoriesSection } from '@/components/home-page/SuccessStoriesSection';
+import { GallerySection } from '@/components/home-page/GallerySection';
+import { AboutServicesSection } from '@/components/home-page/ServicesSection';
 
 export const revalidate = 60;
 
@@ -39,7 +42,7 @@ export const metadata: Metadata = {
     locale: 'en_KE',
     images: [
       {
-        url: 'https://sgcfoundation.org/og-image.webp',
+        url: 'https://sgcfoundation.org/sgcf_slide1.jpg',
         width: 1200,
         height: 630,
         alt: 'Susan Gitau Counseling Foundation - Healing Minds, Restoring Hope',
@@ -50,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Susan Gitau Counseling Foundation | Professional Mental Health Services',
     description: 'Professional, compassionate mental health counseling services in Kenya.',
-    images: ['https://sgcfoundation.org/twitter-image.jpg'],
+    images: ['https://sgcfoundation.org/sgcf_slide1.jpg'],
     creator: '@sgcfoundation',
     site: '@sgcfoundation',
   },
@@ -182,15 +185,15 @@ export default async function Home() {
       />
 
       <div>
-        <HeroSection />
-        <ServicesSection />
+        <HeroSlider />
+       <AboutServicesSection />
         <EventsUpdatesSection
           events={events}
           blogPosts={blogPosts}
           galleryImages={galleryImages}
           videoData={videoData}
         />
-        <ProgramsSection />
+       <GallerySection />
       </div>
     </>
   );

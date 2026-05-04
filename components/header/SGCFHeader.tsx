@@ -26,9 +26,10 @@ const sgcfMenuItems = [
       { label: 'Affiliations', href: '/about/affiliations' },
     ]
   },
-  { label: 'Services', href: '/services', id: 'services' },
+  //{ label: 'Services', href: '/services', id: 'services' },
   { label: 'Blog', href: '/blog', id: 'blog' },
   { label: 'Events', href: '/events', id: 'events' },
+  { label: 'Portfolio', href: '/portfolio', id: 'portfolio' },
   { label: 'Contact', href: '/contact', id: 'contact' },
 ];
 
@@ -418,7 +419,7 @@ export const SGCFHeader = () => {
 
             {/* CTA Buttons */}
             <div className="flex items-center space-x-3">
-              <Link
+              {/* <Link
                 href="/book-appointment"
                 className="hidden md:flex items-center space-x-2 px-5 py-2.5 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 text-white"
                 style={{ 
@@ -427,7 +428,7 @@ export const SGCFHeader = () => {
               >
                 <Calendar size={18} />
                 <span>Appointment</span>
-              </Link>
+              </Link> */}
 
               <Link
                 href="/donate"
