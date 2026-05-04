@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Susan Gitau Counseling Foundation | Healing Minds, Restoring Hope',
     description:
-      'Professional, compassionate mental health counseling services in Kenya. Individual therapy, couples counseling, trauma recovery, and community wellness programs.',
+      'Susan Gitau Counseling Foundation (SGCF) is a non-profit organization dedicated to transforming lives through compassionate care, professional counseling, and community empowerment.',
     url: 'https://sgcfoundation.org',
     siteName: 'Susan Gitau Counseling Foundation',
     type: 'website',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Susan Gitau Counseling Foundation | Professional Mental Health Services',
-    description: 'Professional, compassionate mental health counseling services in Kenya.',
+    description: 'Susan Gitau Counseling Foundation (SGCF) is a non-profit organization dedicated to transforming lives through compassionate care, professional counseling, and community empowerment.',
     images: ['https://sgcfoundation.org/sgcf_slide1.jpg'],
     creator: '@sgcfoundation',
     site: '@sgcfoundation',
@@ -130,7 +130,7 @@ export default async function Home() {
     '@context': 'https://schema.org',
     '@type': 'CounselingService',
     name: 'Susan Gitau Counseling Foundation',
-    description: 'Susan Gitau Counseling Foundation provides professional, compassionate mental health counseling services in Kenya, including individual therapy, couples counseling, trauma recovery, and community wellness programs.',
+    description: 'Professional mental health counseling services in Kenya.',
     provider: {
       '@type': 'Organization',
       name: 'Susan Gitau Counseling Foundation',
