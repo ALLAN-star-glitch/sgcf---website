@@ -187,45 +187,51 @@ export const SGCFHeader = () => {
         className={`
           fixed left-0 w-full z-50 transition-all duration-500 bg-white/95 backdrop-blur-sm
           ${isScrolled 
-            ? 'top-0 shadow-lg py-3' 
-            : 'top-0 md:top-[38px] shadow-md py-4 md:py-5'
+            ? 'top-0 shadow-lg py-2' 
+            : 'top-0 md:top-[38px] shadow-md py-0 md:py-0'
           }
         `}
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center">
-            {/* Logo + Brand */}
-            <Link 
-              href="/" 
-              className="flex items-center space-x-3 group"
-              onClick={() => setMobileMenuOpen(false)}
+       {/* Logo + Brand */}
+        <Link 
+          href="/" 
+          className="flex items-center space-x-4 group"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className={`
+              relative transition-all duration-300 flex-shrink-0
+            ${isScrolled ? 'w-25 h-14' : 'w-30 h-20'}
+            `}
+          >
+            <Image
+              src="/logo_sgcf_transp.png"
+              alt="Susan Gitau Counseling Foundation"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+
+          <div>
+            <h1
+              className={`
+                font-bold tracking-tight transition-all duration-300 leading-tight
+                ${isScrolled ? 'text-2xl' : 'text-3xl'}
+              `}
             >
-              <div className={`
-                relative rounded-2xl overflow-hidden transition-all duration-300
-                ${isScrolled ? 'w-10 h-10' : 'w-12 h-12'}
-              `}>
-                <Image
-                  src="/sgcf-logo.png"
-                  alt="Susan Gitau Counseling Psychology"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div>
-                <h1 className={`
-                  font-bold tracking-tight transition-all duration-300
-                  ${isScrolled ? 'text-lg' : 'text-xl'}
-                `}>
-                  <span className="text-gradient-primary">
-                    Susan Gitau Counseling Foundation
-                  </span>
-                </h1>
-                <p className="text-xs text-gray-500 -mt-0.5">
-                  Counseling Psychology
-                </p>
-              </div>
-            </Link>
+              <span className="text-gradient-primary">
+                SGCF
+              </span>
+            </h1>
+
+            <p className="text-xs uppercase tracking-wider text-gray-500 font-medium">
+              Susan Gitau Counseling Foundation
+            </p>
+          </div>
+        </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-1">
