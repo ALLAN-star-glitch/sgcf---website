@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Award, Users, BookOpen, ArrowRight, Mail, Phone, MapPin } from 'lucide-react';
+import { Calendar, Award, Users, BookOpen, ArrowRight, Mail, Phone, MapPin, Globe, Briefcase, GraduationCap, PhoneCall, Mail as MailIcon, Video, Laptop } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const HeroSection = () => {
@@ -34,18 +34,18 @@ const HeroSection = () => {
               <div className="relative aspect-[4/5]">
                 <Image
                   src="/about-founder.png"
-                  alt="Dr. Susan Gitau - Founder and Clinical Director"
+                  alt="Dr. Susan Gitau - Founder, Executive Director & Counseling Psychologist"
                   fill
                   className="object-cover object-top"
                   priority
                 />
               </div>
-              {/* Badge Overlay */}
+              {/* Badge Overlay - Updated */}
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
                 <div className="flex items-center gap-2">
                   <Award size={16} style={{ color: 'var(--color-primary)' }} />
                   <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>
-                    15+ Years Experience
+                    20+ Years Experience
                   </span>
                 </div>
               </div>
@@ -59,9 +59,9 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: 'var(--color-lavender)' }}>
-              <Users size={14} style={{ color: 'var(--color-primary)' }} />
+              <Briefcase size={14} style={{ color: 'var(--color-primary)' }} />
               <span className="text-sm font-medium" style={{ color: 'var(--color-primary-dark)' }}>
-                Founder & Clinical Director
+                Founder & Executive Director | Counseling Psychologist
               </span>
             </div>
             
@@ -71,38 +71,95 @@ const HeroSection = () => {
             </h1>
             
             <p className="text-xl mb-6" style={{ color: 'var(--color-primary)' }}>
-              MSC Certified Trainer | Trauma Healing Expert | Clinical Psychologist
+              PhD in Counseling Psychology | Senior Accredited Supervisor | Trauma Expert
             </p>
             
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Dr. Susan Gitau is a renowned clinical psychologist, certified MSC (Mindful Self-Compassion) 
-              trainer, and trauma healing expert with over 15 years of experience in mental health. 
-              She is the founder of Susan Gitau Counseling Foundation (SGCF) and a lecturer at Africa 
-              Nazarene University where she chairs the Counseling Department.
+            <p className="text-gray-600 mb-4 leading-relaxed">
+              <strong className="text-gray-800">Progressive Leader & Catalyst for Lasting, Significant Impact</strong> — 
+              Dr. Susan Gitau is a distinguished Counseling Psychologist with a PhD from Chuka University, Kenya. 
+              She brings over 20 years of experience in mental health, trauma counseling, and community development 
+              across Africa and internationally.
             </p>
 
-            {/* Quick Stats */}
+            {/* Expertise Badges */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[
+                'Trauma Counseling', 'Clinical Supervision', 'SGBV Education', 
+                'Global Mental Health', 'Curriculum Development', 'Research'
+              ].map(exp => (
+                <span 
+                  key={exp}
+                  className="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700"
+                >
+                  {exp}
+                </span>
+              ))}
+            </div>
+
+            {/* Contact Info Row - Using Lucide Icons */}
+            <div className="flex flex-wrap gap-4 mb-6 text-sm text-gray-600 border-t border-b border-gray-100 py-3">
+              <span className="flex items-center gap-1">
+                <PhoneCall size={14} style={{ color: 'var(--color-primary)' }} />
+                +254722367619
+              </span>
+              <span className="flex items-center gap-1">
+                <MailIcon size={14} style={{ color: 'var(--color-primary)' }} />
+                drsusangitau@sgcfoundation.org
+              </span>
+              <span className="flex items-center gap-1">
+                <Video size={14} style={{ color: 'var(--color-primary)' }} />
+                Google/Zoom/Skype: Dr. Susan Gitau
+              </span>
+            </div>
+
+            {/* Quick Stats - Updated with accurate data from CV */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               <div className="text-center p-3 rounded-xl bg-white shadow-sm">
                 <Award size={20} style={{ color: 'var(--color-primary)' }} className="mx-auto mb-1" />
-                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>15+</p>
+                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>20+</p>
                 <p className="text-xs text-gray-500">Years Experience</p>
               </div>
               <div className="text-center p-3 rounded-xl bg-white shadow-sm">
                 <BookOpen size={20} style={{ color: 'var(--color-primary)' }} className="mx-auto mb-1" />
-                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>20+</p>
+                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>12+</p>
                 <p className="text-xs text-gray-500">Publications</p>
               </div>
               <div className="text-center p-3 rounded-xl bg-white shadow-sm">
-                <Users size={20} style={{ color: 'var(--color-primary)' }} className="mx-auto mb-1" />
-                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>500+</p>
-                <p className="text-xs text-gray-500">Lives Impacted</p>
+                <Globe size={20} style={{ color: 'var(--color-primary)' }} className="mx-auto mb-1" />
+                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>10+</p>
+                <p className="text-xs text-gray-500">Countries Served</p>
               </div>
               <div className="text-center p-3 rounded-xl bg-white shadow-sm">
-                <Calendar size={20} style={{ color: 'var(--color-primary)' }} className="mx-auto mb-1" />
-                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>2023</p>
-                <p className="text-xs text-gray-500">Best Course Award</p>
+                <GraduationCap size={20} style={{ color: 'var(--color-primary)' }} className="mx-auto mb-1" />
+                <p className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>50+</p>
+                <p className="text-xs text-gray-500">Training Programs</p>
               </div>
+            </div>
+
+            {/* Current Roles */}
+            <div className="mb-6 bg-gray-50 p-4 rounded-xl">
+              <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Briefcase size={14} style={{ color: 'var(--color-primary)' }} />
+                Current Leadership Roles
+              </h3>
+              <ul className="text-xs text-gray-600 space-y-1">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">•</span>
+                  <span>Lecturer in Counseling Psychology - Africa Nazarene University (2011-Present)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">•</span>
+                  <span>Founder & Executive Director - Susan Gitau Counseling Foundation</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">•</span>
+                  <span>Founder & Executive Director - International Professional Counselors Centre (IPCC)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500">•</span>
+                  <span>Senior Accredited Supervisor - Kenya Counseling & Psychological Association (KCPA)</span>
+                </li>
+              </ul>
             </div>
 
             {/* CTA Buttons */}
